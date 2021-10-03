@@ -1,0 +1,145 @@
+{% extends 'layouts/base.html' %} {% block content %} {% load crispy_forms_tags %} {{ form.media }}
+<div class="container mt-5">
+  <div class="row mb-5">
+    <div class="col-md-3">
+      <div class="card card-stats mb-4 mb-lg-0">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title text-uppercase text-muted mb-3">Total Actions</h5>
+              <span class="h2 font-weight-bold mb-0">{{user.total_count}}</span>
+            </div>
+            <div class="col-auto">
+              <div class="icon icon-shape bg-info text-white rounded-circle shadow">
+                <i class="ni ni-spaceship"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card card-stats mb-4 mb-lg-0">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title text-uppercase text-muted mb-3">Total success</h5>
+              <span class="h2 font-weight-bold mb-0">{{user.success_count}}</span>
+            </div>
+            <div class="col-auto">
+              <div class="icon icon-shape bg-success text-white rounded-circle shadow">
+                <i class="ni ni-check-bold"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card card-stats mb-4 mb-lg-0">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title text-uppercase text-muted mb-3">Total Failed</h5>
+              <span class="h2 font-weight-bold mb-0">{{user.fail_count}}</span>
+            </div>
+            <div class="col-auto">
+              <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                <i class="ni ni-fat-remove"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card card-stats mb-4 mb-lg-0">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title text-uppercase text-muted mb-3">Cpu Usage</h5>
+              <span class="h2 font-weight-bold mb-0">100 %</span>
+            </div>
+            <div class="col-auto">
+              <div class="icon icon-shape bg-default text-white rounded-circle shadow">
+                <i class="ni ni-user-run"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-4 order-xl-4 mb-5 mb-xl-0 col-md-6">
+      <div class="card card-profile shadow mt-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-3">
+            <div class="card-profile-image">
+              <a href="#">
+                <img src="{{user.pro_pic}}" class="rounded-circle" />
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+          <div class="d-flex justify-content-between">
+            <a href="https://wa.me/919656007742" class="btn btn-sm btn-info mr-4">connect us</a>
+            <a href="#" class="btn btn-sm btn-default float-right">Message</a>
+          </div>
+        </div>
+        <div class="card-body pt-0 pt-md-4">
+          <div class="text-center">
+            <h3>{{user.username}}</h3>
+            <hr class="my-4" />
+            {% if user.verified %} {% if user.active %}
+            <form action="{% url 'umanage' user.id %}" method="post">
+              {% csrf_token %}
+              <input type="submit" class="btn btn-sm btn-success" value="Active" />
+            </form>
+            {% else %}
+            <form action="{% url 'umanage' user.id %}" method="post">
+              {% csrf_token %}
+              <input type="submit" class="btn btn-sm btn-danger" value="inActive" />
+            </form>
+
+            {% endif %} {% else %} {% if user.active %}
+            <div href="#" class="btn btn-sm btn-success">Active</div>
+            {% else %}
+            <div href="#" class="btn btn-sm btn-danger">inActive</div>
+
+            {% endif %} {% endif %}
+
+            <hr class="my-4" />
+            {% for u in user.tags %}
+            <span class="badge badge-pill badge-info">{{u}}</span>
+            {% endfor %}
+            <hr class="my-4" />
+            <a href="https://instagram.com/{{user.username}}">go to profile</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-8 order-xl-8 col-md-6">
+      <div class="card shadow mt-xl-5 mt-lg-5 mt-md-5">
+        <div class="card-header font-weight-bold text-capitalize">{{title}}</div>
+        <div class="card-body">
+          <form method="post">
+            {% if nb %}
+            <div class="alert alert-warning" role="alert">
+              <span class="alert-inner--icon"><i class="ni ni-like-2"></i></span>
+              <span class="alert-inner--text"><strong>!</strong>{{nb}}</span>
+            </div>
+            {% endif %} {% csrf_token %} {{form|crispy}}
+            <input type="submit" value="{{btn}}" class="btn btn-primary btn-block" />
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {% endblock content %}
+  </div>
+</div>

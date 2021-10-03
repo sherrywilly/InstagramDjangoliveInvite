@@ -1,0 +1,52 @@
+{% extends 'layouts/base.html' %} {% block content %}
+{% load humanize %}
+<div class="container mt-3">
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <div>
+          <table class="table align-items-center table-dark">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">profilepic</th>
+                <th scope="col">username</th>
+                <th scope="col">Status</th>
+                <th scope="col">time</th>
+
+                
+              </tr>
+            </thead>
+            <tbody class="list">
+              {% for i in reports %}
+              <tr>
+                <th scope="row" class="name">
+                  <div class="media align-items-center">
+                    <a href="#" class="avatar rounded-circle mr-3">
+                      <img alt="Image" src="{{i.ig_id.pro_pic}}" />
+                    </a>
+                  </div>
+                </th>
+                <td class="budget">{{i.ig_id.username}}</td>
+                <td class="status">
+                  <span class="badge badge-dot mr-4">
+                    {% if i.status == 'Success' %}
+
+                    <i class="bg-success"></i> {{i.status}} {% else %}
+                    <i class="bg-warning"></i> {{i.status}} {% endif %}
+                  </span>
+                </td>
+                <td class="budget">{{i.datetime|naturaltime}}</td>
+              </tr>
+
+              {% endfor %}
+             
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+

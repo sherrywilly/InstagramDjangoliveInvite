@@ -1,0 +1,77 @@
+version: '3.1'
+services:
+  db:
+    restart: always
+    image: postgres:12
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=pwd
+    volumes:
+      - "insta_db:/var/lib/postgresql/data"
+    expose:
+      - 5432
+    ports:
+      - 5433:5432
+    networks:
+      - insta_tier
+
+  redis:
+    image: redis:latest
+    container_name: rd01
+    networks:
+      - insta_tier
+
+  webapp:
+    restart: always
+    build: .
+    container_name: wa01
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    links:
+      - redis
+    depends_on:
+      - db
+      - redis
+    networks:
+      - insta_tier
+    volumes:
+      - .:/app
+
+
+
+  celery:
+    build: .
+    container_name: cl01
+    command: celery -A instaDjangoApi worker -l info
+    links:
+      - redis
+    networks:
+      - insta_tier
+  
+  beat:
+    build: .
+    depends_on:
+      - redis
+    command: celery -A instaDjangoApi beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    restart: unless-stopped
+    networks:
+      - insta_tier
+volumes:
+  insta_db:
+    driver: local
+  static_volume:
+    driver: local
+networks:
+  insta_tier:
+    driver: bridge
+  # flower:
+  #   build: .
+  #   command: celery flower -app instaDjangoApi --broker=redis://redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "5555:5555"
+  #   expose:
+  #     - "5555"
+
