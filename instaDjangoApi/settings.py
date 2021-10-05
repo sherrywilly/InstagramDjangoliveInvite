@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-u@7ey!qau#m$k@6j-=%x53z%izy!gv40#3yht1tbps^x7x!ce@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -123,6 +123,8 @@ if DEBUG:
     ]
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = '/static/'
+STATIC_URL = '/static/'
 
 
 CELERY_BROKER_URL = 'redis://redis:6379/'

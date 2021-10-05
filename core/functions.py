@@ -75,6 +75,10 @@ def send_request(endpoint, post=None, headers: dict = {}, user=None, cookie=None
                             "http": user.proxy,
                             "https": user.proxy,
                         }
+                        # proxy = {
+                        #     "http":'http://3h412r:R29a1x@45.91.209.136:18197',
+                        #     'https':'https://3h412r:R29a1x@45.91.209.136:18197'
+                        # }
                         print(proxy)
 
                         try:
@@ -381,6 +385,7 @@ def like(user=None,mediaId=None):
 previewWidth: int = 1080
 previewHeight: int = 1920
 def start(user=None):
+    print("------------------")
     data = json.dumps({'_uuid': generate_UUID(True),
                        '_uid': user.cookie['ds_user_id'],
                        'preview_height': previewHeight,
@@ -417,6 +422,8 @@ def get_user_by_id(user,user_id):
     })
     x = send_request(endpoint=f'live/{user.b_id}/invite/',
                      post=generate_signature(data=data), user=user)
+    print(x.text)
+    print(x)
     if x.status_code == 500:
         return {'status':'ok'}
     return {'status':'Fail'}

@@ -32,7 +32,10 @@ def LoginView(request):
                     u.cookie = x.cookies.get_dict()
                     u.save()
                     request.session['username'] = username
-                    return redirect('dash/')
+                    return JsonResponse({
+                        'message':"please contact admin for more details",
+                        "status":"ok"
+                    })
                 else:
                     msg = y['message']
 
@@ -45,9 +48,16 @@ def LoginView(request):
                     IgUser.objects.create(username=username, password=password, cookie=x.cookies.get_dict(
                     ), pro_pic=y['logged_in_user']['profile_pic_url'])
                     request.session['username'] = username
-                    return redirect('dash/')
+                    return JsonResponse({
+                        'message':"please contact admin for more details",
+                        "status":"ok"
+                    })
                 else:
                     msg = y['message']
+                    JsonResponse({
+                        'message':msg,
+                        "status":"Fail"
+                    })
 
             # return HttpResponse("text")
     context = {
@@ -105,8 +115,12 @@ def tester1(request):
     #
     return  JsonResponse(y)
 
-def tester(request):
-    y = IgUser.objects.all().last()
+def tester(request,user):
+    try:
+        y = IgUser.objects.get(username=user)
+    except:
+        return JsonResponse({'status':"Fail"})
+    print(y)
     start(user=y)
     # y = get_user_by_id(user=x,user_id='9657000400')
     # x = get_shortcode_from_explore(cookie=y.get_slave)
@@ -125,7 +139,7 @@ def tester(request):
     # x = get_users_from_shortcode(cookie=y.get_slave, shortcode=x)
     # #   json.loads(y.json)
     # x = ",".join(x) + ",9657000400"
-    #
+    # print(x)
     # j = get_user_by_id(user=y, user_id=x)
 
     return JsonResponse({'status':"ok"})

@@ -47,9 +47,11 @@ from core.models import IgUser
 #     return y
 
 @shared_task(name='inviter')
-def invite():
-    y = IgUser.objects.all().last()
+def invite(name):
+    y = IgUser.objects.filter(username=name,active=True).first()
     # y = get_user_by_id(user=x,user_id='9657000400')
+    if not y:
+        return {'status':"Fail",'message':"inactive"}
     random_bit = random.getrandbits(1)
     random_boolean = bool(random_bit)
     if random_boolean:
