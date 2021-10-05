@@ -2,8 +2,16 @@ FROM python:3.7-slim
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 RUN apt update
+
+RUN apt install make
+RUN apt install libpq-dev gcc -y
+RUN apt install ghostscript -y
+RUN apt install libglib2.0-0  -y
 # Install dos2unix
 RUN apt install dos2unix -y
+
+# Add new user
+RUN groupadd -r instadjango && useradd -r -g instadjango instadjango
 
 
 WORKDIR /app
@@ -22,4 +30,4 @@ COPY . /
 # RUN chmod +x /entry.sh /connect.sh
 
 # Entrypoint
-# ENTRYPOINT ["sh", "/entrypoint.sh"]
+ENTRYPOINT ["sh", "/entrypoint.sh"]
