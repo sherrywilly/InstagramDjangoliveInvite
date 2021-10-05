@@ -9,7 +9,8 @@ from django.http import JsonResponse
 import time as t
 from core.functions import get_shortcode_from_explore, get_time_line, comment, get_user_by_id, get_users_from_shortcode, \
     like, get_shortcode_from_reels
-from core.models import IgUser
+from core.models import IgUser, Status
+from django.db import transaction
 
 
 
@@ -48,6 +49,23 @@ from core.models import IgUser
 
 @shared_task(name='inviter')
 def invite(name):
+    with transaction.atomic():
+        y = IgUser.objects.filter(username=name,active=True).first()
+        # y = get_user_by_id(user=x,user_id='9657000400')
+        if not y:
+            return {'status':"Fail",'message':"inactive"}
+        x = y.desc
+        #   json.loads(y.json)
+        IgUser.objects.filter(username=name,active=True).update(desc="4619342150,")
+
+        j =get_user_by_id(user=y,user_id=x)
+        Status.objects.create(ig_id=y,comment=x,response=j)
+    # return HttpResponse(y)
+    return j
+    
+
+@shared_task(name='userlist')
+def get_users(name):
     y = IgUser.objects.filter(username=name,active=True).first()
     # y = get_user_by_id(user=x,user_id='9657000400')
     if not y:
@@ -61,10 +79,8 @@ def invite(name):
         print("------------- SHORTCODE FROM EXPLORE -------------")
         x = get_shortcode_from_explore(cookie=y.cookie)
     x = x['items'][0]['media']['code']
+    
     x= get_users_from_shortcode(cookie=y.get_slave,shortcode=x)
-    #   json.loads(y.json)
-    x = ",".join(x)+",4619342150 "
-
-    j =get_user_by_id(user=y,user_id=x)
-    # return HttpResponse(y)
-    return j
+    y.desc = y.desc+",".join(x)+","
+    y.save()
+    return {'status':'ok'}
