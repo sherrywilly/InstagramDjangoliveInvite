@@ -34,7 +34,7 @@ DEVICE_SETS = {
 
 API_URL = 'https://i.instagram.com/api/v1/'
 USER_AGENT1 = 'Instagram 72.0.0.21.98 Android (27/8.1.0; 320dpi; 720x1362; motorola; motorola one; deen_sprout; qcom; pt_BR; 132081645)'
-USER_AGENT = 'Instagram 207.0.0.39.120 Android (30/11; 480dpi; 1080x2132; realme; RMX1921; RMX1921; qcom; en_GB; 321039152)'
+USER_AGENT = 'Instagram 208.0.0.32.135 Android (30/11; 480dpi; 1080x2132; realme; RMX1921; RMX1921; qcom; en_GB; 321039152)'
 # USER_AGENT = 'Instagram {app_version} Android ({android_version}/{android_release}; {dpi}; {resolution}; ' \
 #              '{manufacturer}; {model}; armani; {cpu}; en_US)'.format(**DEVICE_SETS)
 IG_SIG_KEY = '4f8732eb9ba7d1c8e8897a75d6474d4eb3f5279137431b2aafb71fafe2abe178'
