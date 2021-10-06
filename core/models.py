@@ -83,14 +83,14 @@ class IgUser(models.Model):
             c = 0
         return c
 
-    @property
-    def tags(self):
-        x = [i.name for i in self.tag_set.all()]
-        if len(x) > 0:
-            return x
-        else:
-            x = ['india', 'kerala', 'mallu', 'malappuram', 'kochi']
-            return x
+    # @property
+    # def tags(self):
+    #     x = [i.name for i in self.tag_set.all()]
+    #     if len(x) > 0:
+    #         return x
+    #     else:
+    #         x = ['india', 'kerala', 'mallu', 'malappuram', 'kochi']
+    #         return x
 
 
 class Status(models.Model):

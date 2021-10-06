@@ -33,6 +33,9 @@ services:
       - "8000:8000"
     expose:
       - "8000"
+    environment:
+      - DJANGO_COLLECT_STATIC=off
+      - DJANGO_MANAGEPY_MIGRATE=on
     networks:
       - insta_tier
     links:

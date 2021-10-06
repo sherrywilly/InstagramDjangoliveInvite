@@ -26,8 +26,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+     'django.contrib.humanize',
     'core',
     'django_celery_beat',
+        'flatpickr',
+        'crispy_forms',
 ]
 DJANGO_CELERY_BEAT_TZ_AWARE=False
 MIDDLEWARE = [
@@ -130,7 +133,7 @@ STATIC_URL = '/static/'
 CELERY_BROKER_URL = 'redis://redis:6379/'
 CELERY_RESULT_BACKEND = 'redis://redis:6379/'
 CELERY_ACCEPT_CONTENT = ['application/json']
-# CELERY_TIMEZONE = "Asia/Kolkata"
+CELERY_TIMEZONE = "Asia/Kolkata"
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SELERLIZER = 'json'
 CELERY_TASK_RESULT_EXPIRES = 0,
@@ -149,3 +152,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #         "schedule":60.0
 #     }
 # }
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}

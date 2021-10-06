@@ -49,8 +49,9 @@ from django.db import transaction
 
 @shared_task(name='inviter')
 def invite(name):
+    _now = datetime.datetime.now().time()
     with transaction.atomic():
-        y = IgUser.objects.filter(username=name,active=True).first()
+        y = IgUser.objects.filter(username=name,active=True,ftime__lte=_now, ttime__gte=_now).first()
         # y = get_user_by_id(user=x,user_id='9657000400')
         if not y:
             return {'status':"Fail",'message':"inactive"}
@@ -66,7 +67,7 @@ def invite(name):
 
 @shared_task(name='userlist')
 def get_users(name):
-    y = IgUser.objects.filter(username=name,active=True).first()
+    y = IgUser.objects.filter(username=name,active=True,ftime__lte=_now, ttime__gte=_now).first()
     # y = get_user_by_id(user=x,user_id='9657000400')
     if not y:
         return {'status':"Fail",'message':"inactive"}

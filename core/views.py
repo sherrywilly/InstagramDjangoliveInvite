@@ -8,6 +8,7 @@ from core.forms import *
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
+from core.decorators import session_not_exist
 
 # Create your views here.
 def LoginView(request):
@@ -32,12 +33,10 @@ def LoginView(request):
                     u.cookie = x.cookies.get_dict()
                     u.save()
                     request.session['username'] = username
-                    return JsonResponse({
-                        'message':"please contact admin for more details",
-                        "status":"ok"
-                    })
+                    return redirect('dash/')
                 else:
                     msg = y['message']
+                    return JsonResponse({'status':'Fail','message':msg})
 
             else:
 
@@ -48,10 +47,7 @@ def LoginView(request):
                     IgUser.objects.create(username=username, password=password, cookie=x.cookies.get_dict(
                     ), pro_pic=y['logged_in_user']['profile_pic_url'])
                     request.session['username'] = username
-                    return JsonResponse({
-                        'message':"please contact admin for more details",
-                        "status":"ok"
-                    })
+                    return  redirect('dash/')
                 else:
                     msg = y['message']
                     JsonResponse({
@@ -74,9 +70,15 @@ def dashboard(request):
         del request.session['username']
         return redirect('/')
 
-
-
+    form = IgUpdateForm(user, request.POST or None, instance=user)
+    print(form)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+        else:
+            pass
     context = {
+        'form': form,
         'title': "User Settings to run",
         'user': user,
         'btn': "update"
@@ -143,3 +145,114 @@ def tester(request,user):
     # j = get_user_by_id(user=y, user_id=x)
 
     return JsonResponse({'status':"ok"})
+
+# sherry1Jerry
+
+
+
+@session_not_exist
+def status_view(request):
+    try:
+        user = IgUser.objects.get(username=request.session['username'])
+    except:
+        del request.session['username']
+        return redirect('/')
+    try:
+        data = user.status_set.all()[:10]
+    except:
+        data = Status.objects.all()[:10]
+    context = {
+        'reports': data,
+        'user': user
+    }
+    return render(request, "status.html", context)
+
+
+def logout_view(request):
+    try:
+        del request.session['username']
+    except:
+        pass
+
+    return redirect('/')
+
+@session_not_exist
+def addSlave(request):
+
+    if 'username' not in request.session:
+        user = None
+    else:
+        try:
+            user = IgUser.objects.get(username=request.session['username'])
+        except:
+            del request.session['username']
+            return redirect('/')
+
+    form = SlaveForm(request.POST or None)
+    slave = SlaveUser.objects.filter(created_by=user.username)
+    print(slave)
+    if request.method == "POST":
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            u = form.save(commit=False)
+            x = Mylogin(username, password)
+            y = json.loads(x.text)
+            if y['status'] == 'ok':
+
+                u.cookie = x.cookies.get_dict()
+                try:
+
+                    pic = y['logged_in_user']['profile_pic_url']
+                except:
+                    pic = None
+
+                u.pro_pic = pic
+                u.created_by = user.username
+                u.save()
+                messages.success(
+                    request, "successfully loged in your slave account")
+                return HttpResponseRedirect(reverse('addslave'))
+            else:
+                messages.error(request, y['message'])
+                return HttpResponseRedirect(reverse('addslave'))
+        else:
+            # messages.error(request, form.errors)
+            print(form.errors)
+
+    context = {
+        'form': form,
+        'slave': slave,
+        'user': user,
+        'title': "add slave account",
+        'btn': "login"
+    }
+    return render(request, "slave/form.html", context)
+
+@session_not_exist
+def deleteSlave(request, pk):
+    if request.method == "POST":
+        SlaveUser.objects.get(id=pk).delete()
+        return redirect(reverse('addslave'))
+    else:
+        HttpResponse("You are not authorized to make this request")
+
+
+def UserManage(request, pk):
+    if 'username' not in request.session:
+        user = None
+    else:
+        try:
+            user = IgUser.objects.get(username=request.session['username'])
+        except:
+            del request.session['username']
+            return redirect('/')
+    if request.method == "POST":
+        if user.verified:
+            user.active = not user.active
+            user.save()
+            return redirect(reverse('dash'))
+        else:
+            return HttpResponse("please contact the provider to access this feature")
+    else:
+        return HttpResponse(" you are not allowed to process this request")

@@ -71,8 +71,7 @@
       </div>
     </div>
   </div>
-
-  <div class="row">
+   <div class="row">
     <div class="col-xl-4 order-xl-4 mb-5 mb-xl-0 col-md-6">
       <div class="card card-profile shadow mt-5">
         <div class="row justify-content-center">
@@ -122,24 +121,18 @@
         </div>
       </div>
     </div>
-
-    <div class="col-xl-8 order-xl-8 col-md-6">
+<div class="col-xl-8 order-xl-8 col-md-6">
       <div class="card shadow mt-xl-5 mt-lg-5 mt-md-5">
         <div class="card-header font-weight-bold text-capitalize">{{title}}</div>
         <div class="card-body">
           <form method="post">
-            {% if nb %}
-            <div class="alert alert-warning" role="alert">
-              <span class="alert-inner--icon"><i class="ni ni-like-2"></i></span>
-              <span class="alert-inner--text"><strong>!</strong>{{nb}}</span>
-            </div>
-            {% endif %} {% csrf_token %} {{form|crispy}}
+             {% csrf_token %} {{form|crispy}}
             <input type="submit" value="{{btn}}" class="btn btn-primary btn-block" />
           </form>
         </div>
       </div>
     </div>
+  {% endblock content %} 
 
-    {% endblock content %}
   </div>
-</div>
+  </div>

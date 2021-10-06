@@ -1,4 +1,12 @@
 #!/bin/sh
-python manage.py migrate --noinput
-# python manage.py collectstatic --noinput
-# gunicorn instaDjangoApi.wsgi:application --bind 0.0.0.0:8000
+if [ "x$DJANGO_MANAGEPY_MIGRATE" = 'xon' ]; then
+    echo "Apply database migrations"
+    python manage.py migrate --noinput
+fi
+
+if [ "x$DJANGO_COLLECT_STATIC" = 'xon' ]; then
+    echo "Collect static files"
+    python manage.py collectstatic --noinput
+fi
+
+exec "$@"

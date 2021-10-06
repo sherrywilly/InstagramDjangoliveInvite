@@ -31,6 +31,9 @@ services:
       - "8000:8000"
     links:
       - redis
+    environment:
+      - DJANGO_COLLECT_STATIC=off
+      - DJANGO_MANAGEPY_MIGRATE=on
     depends_on:
       - db
       - redis
