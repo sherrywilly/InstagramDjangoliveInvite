@@ -9,8 +9,9 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from core.decorators import session_not_exist
-
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
+@csrf_exempt
 def LoginView(request):
     form = LoginForm(request.POST or None)
     msg = None
