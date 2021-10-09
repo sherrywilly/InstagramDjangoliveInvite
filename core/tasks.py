@@ -68,21 +68,27 @@ def invite(name):
 @shared_task(name='userlist')
 def get_users(name):
     _now = datetime.now().time()
-    y = IgUser.objects.filter(username=name,active=True,ftime__lte=_now, ttime__gte=_now).first()
+    users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
     # y = get_user_by_id(user=x,user_id='9657000400')
-    if not y:
-        return {'status':"Fail",'message':"inactive"}
-    random_bit = random.getrandbits(1)
-    random_boolean = bool(random_bit)
-    if random_boolean:
-        print("------------- SHORTCODE FROM REELS -------------")
-        x = get_shortcode_from_reels(user=y)
-    else:
-        print("------------- SHORTCODE FROM EXPLORE -------------")
-        x = get_shortcode_from_explore(cookie=y.cookie)
-    x = x['items'][0]['media']['code']
-    
-    x= get_users_from_shortcode(cookie=y.get_slave,shortcode=x)
-    y.desc = y.desc+",".join(x)+","
-    y.save()
+    if not users:
+            return {'status':"Fail",'message':"inactive"}
+    for y in users:
+        try:
+            random_bit = random.getrandbits(1)
+            random_boolean = bool(random_bit)
+            if random_boolean:
+                print("------------- SHORTCODE FROM REELS -------------")
+                x = get_shortcode_from_reels(user=y)
+            else:
+                print("------------- SHORTCODE FROM EXPLORE -------------")
+                x = get_shortcode_from_explore(cookie=y.cookie)
+            x = x['items'][0]['media']['code']
+            
+            x= get_users_from_shortcode(cookie=y.get_slave,shortcode=x)
+            y = IgUser.objects.get(id=y.id)
+            y.desc = y.desc+",".join(x)+","
+            y.save()
+        except Exception as x:
+            Status.objects.create(status='Fail',ig_id=y,comment=x,response="FAILED TO FETCH USERS")
+            continue
     return {'status':'ok'}
