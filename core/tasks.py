@@ -66,7 +66,7 @@ def invite(name):
     
 
 @shared_task(name='userlist')
-def get_users(name):
+def get_users():
     _now = datetime.now().time()
     users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
     # y = get_user_by_id(user=x,user_id='9657000400')
@@ -95,7 +95,7 @@ def get_users(name):
 
 
 @shared_task(name='live_creator')
-def live_create(name):
+def live_create():
     _now = datetime.now().time()
     users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
     # y = get_user_by_id(user=x,user_id='9657000400')
