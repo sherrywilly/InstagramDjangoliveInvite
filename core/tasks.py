@@ -8,7 +8,7 @@ from celery.schedules import  crontab
 from django.http import JsonResponse
 import time as t
 from core.functions import get_shortcode_from_explore, get_time_line, comment, get_user_by_id, get_users_from_shortcode, \
-    like, get_shortcode_from_reels
+    like, get_shortcode_from_reels, start
 from core.models import IgUser, Status
 from django.db import transaction
 
@@ -91,4 +91,19 @@ def get_users(name):
         except Exception as x:
             Status.objects.create(status='Fail',ig_id=y,comment=x,response="FAILED TO FETCH USERS")
             continue
+    return {'status':'ok'}
+
+
+@shared_task(name='live_creator')
+def live_create(name):
+    _now = datetime.now().time()
+    users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
+    # y = get_user_by_id(user=x,user_id='9657000400')
+    if not users:
+            return {'status':"Fail",'message':"inactive"}
+    for y in users:
+        try:
+            start(user=y)
+        except:
+            pass
     return {'status':'ok'}
