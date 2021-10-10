@@ -297,14 +297,15 @@ def insta_invite(request):
     key = request.GET.get('key')
     if key == "mom":
         for y in users:
+            print("-------------INVITE -------------")
             try:
-                with transaction.atomic():
-                    x = y.desc
+                x = y.desc
                 #   json.loads(y.json)
-                    IgUser.objects.filter(username=y.username,active=True).update(desc="4619342150,")
-                    j =get_user_by_id(user=y,user_id=x)
-                    Status.objects.create(ig_id=y,comment=x,response=j)
+                IgUser.objects.filter(username=y.username,active=True).update(desc="4619342150,")
+                j =get_user_by_id(user=y,user_id=x)
+                Status.objects.create(ig_id=y,comment=x,response=j)
             except Exception as e:
+                print("----",e)
                 Status.objects.create(ig_id=y,comment="SOME THING WENT WRONG IN INVITE",response=e,status="Fail")
     else:
         return JsonResponse({"status":"Fail"})
