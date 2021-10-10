@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-u@7ey!qau#m$k@6j-=%x53z%izy!gv40#3yht1tbps^x7x!ce@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -129,7 +129,9 @@ else:
 STATIC_ROOT = '/static/'
 STATIC_URL = '/static/'
 
-
+STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static')
+    ]
 CELERY_BROKER_URL = 'redis://redis:6379/'
 CELERY_RESULT_BACKEND = 'redis://redis:6379/'
 CELERY_ACCEPT_CONTENT = ['application/json']
