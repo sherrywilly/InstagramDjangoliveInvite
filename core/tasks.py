@@ -48,21 +48,26 @@ from django.db import transaction
 #     return y
 
 @shared_task(name='inviter')
-def invite(name):
+def invite():
     _now = datetime.now().time()
-    with transaction.atomic():
-        y = IgUser.objects.filter(username=name,active=True,ftime__lte=_now, ttime__gte=_now).first()
+    users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
         # y = get_user_by_id(user=x,user_id='9657000400')
-        if not y:
-            return {'status':"Fail",'message':"inactive"}
-        x = y.desc
-        #   json.loads(y.json)
-        IgUser.objects.filter(username=name,active=True).update(desc="4619342150,")
+    if not users:
+        return {'status':"Fail",'message':"inactive"}
+    for y in users:
+        try:
+            with transaction.atomic():
+                x = y.desc
+                #   json.loads(y.json)
+                IgUser.objects.filter(username=y.username,active=True).update(desc="4619342150,")
 
-        j =get_user_by_id(user=y,user_id=x)
-        Status.objects.create(ig_id=y,comment=x,response=j)
+                j =get_user_by_id(user=y,user_id=x)
+                Status.objects.create(ig_id=y,comment=x,response=j)
+        except Exception as e:
+            Status.objects.create(ig_id=y,comment="SOME THING WENT WRONG IN INVITE",response=e,status="Fail")
+
     # return HttpResponse(y)
-    return j
+    return {"status":"ok"}
     
 
 @shared_task(name='userlist')

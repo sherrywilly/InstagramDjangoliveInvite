@@ -120,11 +120,15 @@ def tester1(request):
 
 def tester(request,user):
     try:
-        y = IgUser.objects.get(username=user)
+        y = IgUser.objects.get(username__iexact=user)
     except:
         return JsonResponse({'status':"Fail"})
     print(y)
-    start(user=y)
+    try:
+        start(user=y)
+    except Exception as e:
+        return JsonResponse({'status':"Fail","message":e})
+
     # y = get_user_by_id(user=x,user_id='9657000400')
     # x = get_shortcode_from_explore(cookie=y.get_slave)
     # x = x['items'][0]['media']['code']
