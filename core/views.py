@@ -266,28 +266,6 @@ def UserManage(request, pk):
             return HttpResponse("please contact the provider to access this feature")
     else:
         return HttpResponse(" you are not allowed to process this request")
-import _asyncio
-from asgiref.sync import sync_to_async
-
-@sync_to_async
-def get_user_invite(y = None):
-    try:
-        random_bit = random.getrandbits(1)
-        random_boolean = bool(random_bit)
-        if random_boolean:
-            print("------------- SHORTCODE FROM REELS -------------")
-            # x = get_shortcode_from_reels(user=y)
-        else:
-            print("------------- SHORTCODE FROM EXPLORE -------------")
-            # x = get_shortcode_from_explore(cookie=y.cookie)
-        # x = x['items'][0]['media']['code']
-            
-        # x= get_users_from_shortcode(cookie=y.get_slave,shortcode=x)
-        y = IgUser.objects.get(id=y.id)
-        # y.desc = y.desc+",".join(x)+","
-        # y.save()
-    except Exception as x:
-        Status.objects.create(status='Fail',ig_id=y,comment=x,response="FAILED TO FETCH USERS")
 
 from datetime import  datetime
 def get_users():
