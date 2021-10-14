@@ -3,7 +3,7 @@ import threading
 from django.db import transaction
 from core.functions import get_shortcode_from_explore, get_shortcode_from_reels_2, get_user_by_id, get_users_from_shortcode
 
-from core.models import IgUser, Status
+from core.models import IgUser, ShortCode, Status
 import random
 class InstaGetUserThread(threading.Thread):
     def __init__(self, user_id):
@@ -19,21 +19,11 @@ class InstaGetUserThread(threading.Thread):
         print("------------------------------------")
             
         try:
-            
-            random_bit = random.getrandbits(1)
-            random_boolean = bool(random_bit)
-            if random_boolean:
-                print("------------- SHORTCODE FROM REELS -------------")
-                x = get_shortcode_from_reels_2(user=y)
-            else:
-                print("------------- SHORTCODE FROM EXPLORE -------------")
-                x = get_shortcode_from_explore(cookie=y.cookie)
-            x = x['items'][0]['media']['code']
-                
-            x= get_users_from_shortcode(cookie=y.get_slave,shortcode=x)
+            x= get_users_from_shortcode(cookie=y.get_slave,shortcode=y.get_shortcode.code)
             y = IgUser.objects.get(id=y.id)
             y.desc = y.desc+",".join(x)+","
             y.save()
+            y.get_shortcode.delete()
         except Exception as x:
             Status.objects.create(status='Fail',ig_id=y,comment=x,response="FAILED TO FETCH USERS")
 
@@ -60,3 +50,27 @@ class InstaInviteThread(threading.Thread):
             Status.objects.create(ig_id=y,comment=x,response=j)
         except Exception as e:
             Status.objects.create(ig_id=y,comment="SOME THING WENT WRONG IN INVITE",response=e,status="Fail")
+
+
+class GetShortCodeThread(threading.Thread):
+    def __init__(self,user_id):
+        self.user_id = user_id
+        threading.Thread.__init__(self)
+
+    def run(self):
+        print("getting shortcodes")
+        y = IgUser.objects.get(id=self.user_id)
+        try:
+            x= get_shortcode_from_explore(cookie=y.get_slave)
+            l =[]
+            for i in x['items']:
+                try:
+                    n=i.get('media').get('code')
+                except:
+                    n = i.get("channel").get('media').get('code')
+                l.append(n)
+            ShortCode.objects.bulk_create([ShortCode(iguser=y,code=code) for code in l])
+        except Exception as e:
+            Status.objects.create(ig_id=y,comment="SOME THING WENT WRONG IN GET SHORTCODE",response=e,status="Fail")
+
+        

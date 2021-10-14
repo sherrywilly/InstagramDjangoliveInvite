@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-u@7ey!qau#m$k@6j-=%x53z%izy!gv40#3yht1tbps^x7x!ce@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -28,11 +28,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
      'django.contrib.humanize',
     'core',
-    'django_celery_beat',
         'flatpickr',
         'crispy_forms',
 ]
-DJANGO_CELERY_BEAT_TZ_AWARE=False
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -67,22 +66,22 @@ WSGI_APPLICATION = 'instaDjangoApi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'postgres',
-            'USER': 'admin',
-            'PASSWORD': 'pwd',
-            'HOST': 'db',
-            'PORT': 5432,
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#             'NAME': 'postgres',
+#             'USER': 'admin',
+#             'PASSWORD': 'pwd',
+#             'HOST': 'db',
+#             'PORT': 5432,
+#         }
+#     }
 
 
 # Password validation
@@ -132,14 +131,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'static')
     ]
-CELERY_BROKER_URL = 'redis://redis:6379/'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TIMEZONE = "Asia/Kolkata"
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SELERLIZER = 'json'
-CELERY_TASK_RESULT_EXPIRES = 0,
-STATIC_URL = '/static/'
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 

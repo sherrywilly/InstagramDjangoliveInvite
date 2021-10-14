@@ -1,0 +1,5 @@
+* * * * * sleep 45; timeout 15s curl  'http://13.231.188.168/fetch_users/?key=mom'
+* * * * * sleep 15; timeout 15s curl  'http://13.231.188.168/fetch_users/?key=mom'
+* * * * * sleep 00; timeout 15s curl  'http://13.231.188.168/fetch_users/?key=mom'
+* * * * * sleep 30; timeout 15s curl  'http://13.231.188.168/fetch_users/?key=mom'
+* * * * * sleep 00; timeout 15s curl  'http://13.231.188.168/invite/?key=mom'

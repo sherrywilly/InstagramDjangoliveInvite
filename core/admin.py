@@ -22,6 +22,7 @@ class statusFilter(admin.ModelAdmin):
 admin.site.register(IgUser, IgAdmin)
 admin.site.register(Status,statusFilter)
 admin.site.register(SlaveUser, SlaveAdmin)
+admin.site.register(ShortCode)
 # admin.site.register(Tag)
 # admin.site.unregister(User)
 admin.site.unregister(Group)

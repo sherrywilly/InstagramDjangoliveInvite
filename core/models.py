@@ -83,6 +83,10 @@ class IgUser(models.Model):
             c = 0
         return c
 
+    @property
+    def get_shortcode(self):
+        return self.shortcode.first()
+
     # @property
     # def tags(self):
     #     x = [i.name for i in self.tag_set.all()]
@@ -117,3 +121,11 @@ class Status(models.Model):
 
 class TargetUsers(models.Model):
     pass
+
+class ShortCode(models.Model):
+    iguser = models.ForeignKey(IgUser,on_delete=models.CASCADE,related_name="shortcode")
+    code = models.CharField(max_length=100,null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.code}  {self.iguser}"

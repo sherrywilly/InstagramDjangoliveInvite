@@ -15,7 +15,7 @@ from django.contrib import messages
 from core.decorators import session_not_exist
 from django.views.decorators.csrf import csrf_exempt
 
-from core.thread import InstaGetUserThread, InstaInviteThread
+from core.thread import GetShortCodeThread, InstaGetUserThread, InstaInviteThread
 # Create your views here.
 @csrf_exempt
 def LoginView(request):
@@ -312,3 +312,18 @@ def insta_invite(request):
         return JsonResponse({"status":"Fail"})
 
     return JsonResponse({"status":"ok"})
+
+def get_short_codes(request):
+    users= get_users()
+    if not users.exists():
+        return JsonResponse({"status":"ok","message":"No users available"})
+    key = request.GET.get('key')
+    if key == "mom":
+        for y in users:
+            print("-------------GET SHORT CODES -------------")
+
+            GetShortCodeThread(y.pk).start()
+    else:
+        return JsonResponse({"status":"Fail"})
+
+    return JsonResponse({"status":'x'})
