@@ -18,16 +18,20 @@ class InstaGetUserThread(threading.Thread):
         y = IgUser.objects.get(id=self.user_id)
         print("------------------------------------")
             
-        try:
+
             
-            random_bit = random.getrandbits(1)
-            random_boolean = bool(random_bit)
-            if random_boolean:
-                print("------------- SHORTCODE FROM REELS -------------")
-                x = get_shortcode_from_reels_2(user=y)
-            else:
-                print("------------- SHORTCODE FROM EXPLORE -------------")
-                x = get_shortcode_from_explore(cookie=y.cookie)
+        random_bit = random.getrandbits(1)
+        random_boolean = bool(random_bit)
+        try:
+                if random_boolean:
+                    print("------------- SHORTCODE FROM REELS -------------")
+                    x = get_shortcode_from_reels_2(user=y)
+                else:
+                    print("------------- SHORTCODE FROM EXPLORE -------------")
+                    x = get_shortcode_from_explore(cookie=y.cookie)
+        except:
+            x = get_shortcode_from_explore(cookie=y.cookie)
+        try:
             x = x['items'][0]['media']['code']
                 
             x= get_users_from_shortcode(cookie=y.get_slave,shortcode=x)
