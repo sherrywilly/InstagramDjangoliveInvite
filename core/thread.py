@@ -1,6 +1,4 @@
 import threading
-
-from django.db import transaction
 from core.functions import get_shortcode_from_explore, get_shortcode_from_reels_2, get_user_by_id, get_users_from_shortcode
 
 from core.models import IgUser, Status
@@ -8,18 +6,10 @@ import random
 class InstaGetUserThread(threading.Thread):
     def __init__(self, user_id):
         self.user_id = user_id
-        print("______init______")
         threading.Thread.__init__(self)
 
     def run(self):
-        print(
-        " thread is running"
-        )
         y = IgUser.objects.get(id=self.user_id)
-        print("------------------------------------")
-            
-
-            
         random_bit = random.getrandbits(1)
         random_boolean = bool(random_bit)
         try:
@@ -32,7 +22,10 @@ class InstaGetUserThread(threading.Thread):
         except:
             x = get_shortcode_from_explore(cookie=y.cookie)
         try:
+            x = x['items'][1]['channel']['media']['code']
+        except Exception as e:
             x = x['items'][0]['media']['code']
+        try:
                 
             x= get_users_from_shortcode(cookie=y.get_slave,shortcode=x)
             y = IgUser.objects.get(id=y.id)
@@ -45,13 +38,9 @@ class InstaGetUserThread(threading.Thread):
 class InstaInviteThread(threading.Thread):
     def __init__(self, user_id):
         self.user_id = user_id
-        print("______init______")
         threading.Thread.__init__(self)
 
     def run(self):
-        print(
-        " thread is running"
-        )
         y = IgUser.objects.get(id=self.user_id)
         print("----------------INVITE--------------------")
         try:
