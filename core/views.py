@@ -1,3 +1,4 @@
+from datetime import datetime
 import asyncio
 from django.db import transaction
 from django.http import response
@@ -9,7 +10,7 @@ from requests.api import get
 from core.functions import *
 from core.models import *
 from core.forms import *
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from core.decorators import session_not_exist
@@ -17,6 +18,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from core.thread import InstaGetUserThread, InstaInviteThread
 # Create your views here.
+
+
 @csrf_exempt
 def LoginView(request):
     form = LoginForm(request.POST or None)
@@ -43,7 +46,7 @@ def LoginView(request):
                     return redirect('dash/')
                 else:
                     msg = y['message']
-                    return JsonResponse({'status':'Fail','message':msg})
+                    return JsonResponse({'status': 'Fail', 'message': msg})
 
             else:
 
@@ -54,12 +57,12 @@ def LoginView(request):
                     IgUser.objects.create(username=username, password=password, cookie=x.cookies.get_dict(
                     ), pro_pic=y['logged_in_user']['profile_pic_url'])
                     request.session['username'] = username
-                    return  redirect('dash/')
+                    return redirect('dash/')
                 else:
                     msg = y['message']
                     JsonResponse({
-                        'message':msg,
-                        "status":"Fail"
+                        'message': msg,
+                        "status": "Fail"
                     })
 
             # return HttpResponse("text")
@@ -92,6 +95,7 @@ def dashboard(request):
     }
     return render(request, "form.html", context)
 
+
 def tester1(request):
     x = IgUser.objects.all().first()
     # print(x)
@@ -120,20 +124,20 @@ def tester1(request):
             print(e)
             pass
 
-
     #
-    return  JsonResponse(y)
+    return JsonResponse(y)
 
-def tester(request,user):
+
+def tester(request, user):
     try:
         y = IgUser.objects.get(username__iexact=user)
     except:
-        return JsonResponse({'status':"Fail"})
+        return JsonResponse({'status': "Fail"})
     print(y)
     try:
         start(user=y)
     except Exception as e:
-        return JsonResponse({'status':"Fail","message":e})
+        return JsonResponse({'status': "Fail", "message": e})
 
     # y = get_user_by_id(user=x,user_id='9657000400')
     # x = get_shortcode_from_explore(cookie=y.get_slave)
@@ -155,10 +159,9 @@ def tester(request,user):
     # print(x)
     # j = get_user_by_id(user=y, user_id=x)
 
-    return JsonResponse({'status':"ok"})
+    return JsonResponse({'status': "ok"})
 
 # sherry1Jerry
-
 
 
 @session_not_exist
@@ -186,6 +189,7 @@ def logout_view(request):
         pass
 
     return redirect('/')
+
 
 @session_not_exist
 def addSlave(request):
@@ -240,6 +244,7 @@ def addSlave(request):
     }
     return render(request, "slave/form.html", context)
 
+
 @session_not_exist
 def deleteSlave(request, pk):
     if request.method == "POST":
@@ -268,16 +273,19 @@ def UserManage(request, pk):
     else:
         return HttpResponse(" you are not allowed to process this request")
 
-from datetime import  datetime
+
 def get_users():
     _now = datetime.now().time()
-    users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
+    users = IgUser.objects.filter(
+        active=True, ftime__lte=_now, ttime__gte=_now)
     # users = IgUser.objects.all()
     return users
+
+
 def fetch_users(request):
-    users= get_users()
+    users = get_users()
     if not users.exists():
-        return JsonResponse({"status":"ok","message":"No users available"})
+        return JsonResponse({"status": "ok", "message": "No users available"})
     key = request.GET.get('key')
     if key == "mom":
         for i in users:
@@ -286,14 +294,15 @@ def fetch_users(request):
             InstaGetUserThread(i.pk).start()
             # time.sleep(5)
     else:
-        return JsonResponse({"status":"Fail"})
+        return JsonResponse({"status": "Fail"})
 
-    return JsonResponse({"status":"ok"})
+    return JsonResponse({"status": "ok"})
+
 
 def insta_invite(request):
-    users= get_users()
+    users = get_users()
     if not users.exists():
-        return JsonResponse({"status":"ok","message":"No users available"})
+        return JsonResponse({"status": "ok", "message": "No users available"})
     key = request.GET.get('key')
     if key == "mom":
         for y in users:
@@ -309,6 +318,6 @@ def insta_invite(request):
             #     print("----",e)
             #     Status.objects.create(ig_id=y,comment="SOME THING WENT WRONG IN INVITE",response=e,status="Fail")
     else:
-        return JsonResponse({"status":"Fail"})
+        return JsonResponse({"status": "Fail"})
 
-    return JsonResponse({"status":"ok"})
+    return JsonResponse({"status": "ok"})

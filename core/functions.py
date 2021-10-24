@@ -51,7 +51,7 @@ basic_headers = {
 }
 
 
-def send_request(endpoint, post=None, headers: dict = {}, user=None, cookie=None,u = None):
+def send_request(endpoint, post=None, headers: dict = {}, user=None, cookie=None, u=None):
     verify = False
     h = basic_headers
     h.update(headers)
@@ -115,6 +115,7 @@ def send_request(endpoint, post=None, headers: dict = {}, user=None, cookie=None
     except Exception as e:
         print('* Except on SendRequest (wait 60 sec and resend): {}'.format(str(e)))
 
+
 def generate_UUID(t: bool = True):
     generated_uuid = str(uuid4())
     if t:
@@ -167,7 +168,7 @@ def login(user=None):
         }
         # user = IgUser.objects.get(id=id)
         x = send_request(
-            endpoint='si/fetch_headers/?challenge_type=signup&guid=' + generate_UUID(False),u=True)
+            endpoint='si/fetch_headers/?challenge_type=signup&guid=' + generate_UUID(False), u=True)
         # print(x.cookies['csrftoken'])
         data = {'phone_id': gen_dev_id2(user=user),
                 '_csrftoken': x.cookies['csrftoken'],
@@ -202,10 +203,12 @@ def get_users_from_hashtag(user=None, u=None):
     print(type(u.tags))
     tags = _tg
     tag = tags[random.randint(0, len(tags)-1)]
-    x = send_request("feed/tag/{}/".format(tag), post=data, user=user,cookie=user.get_slave)
+    x = send_request("feed/tag/{}/".format(tag), post=data,
+                     user=user, cookie=user.get_slave)
     y = json.loads(x.text)
     oo = [item['user']['username'] for item in y['items']]
     return oo
+
 
 def Mylogin(username, password):
 
@@ -215,7 +218,7 @@ def Mylogin(username, password):
     }
     # print(user.username)
     x = send_request(
-        endpoint='si/fetch_headers/?challenge_type=signup&guid=' + generate_UUID(False),u=True)
+        endpoint='si/fetch_headers/?challenge_type=signup&guid=' + generate_UUID(False), u=True)
     m = x.cookies
     # print(x.cookies['csrftoken'])
     data = {'phone_id': gen_dev_id(user=user),
@@ -268,8 +271,9 @@ def get_users_from_targeted_followers_list(cookie=None):
             # print(x)
             # x.delete()
             return "**** @codermallu"
-    li = ["@"+i['node']['username'] for i in json_data['data']['user']['edge_followed_by']['edges']]
-  
+    li = ["@"+i['node']['username']
+          for i in json_data['data']['user']['edge_followed_by']['edges']]
+
     return li
 
 
@@ -316,44 +320,55 @@ def get_users_from_shortcode(cookie=None, shortcode=None):
     upload_response = requests.get(
         url=fetch_url, headers=basic_headers, cookies=cookie)
     _y = json.loads(upload_response.text)
-    li = [i['node']['id'] for i in _y['data']['shortcode_media']['edge_liked_by']['edges']]
+    li = [i['node']['id']
+          for i in _y['data']['shortcode_media']['edge_liked_by']['edges']]
     print(len(li))
     return li
 
+
 def get_shortcode_from_explore(cookie=None):
-    x = requests.get('https://i.instagram.com/api/v1/discover/topical_explore/',headers=basic_headers,cookies=cookie)
+    x = requests.get('https://i.instagram.com/api/v1/discover/topical_explore/',
+                     headers=basic_headers, cookies=cookie)
     return x.json()
 
 
 def get_shortcode_from_reels(user=None):
-    data = {"pct_reels":"0",
-    "max_id":"","seen_reels":[],"tab_type":"clips_tab"}
-    x = send_request('discover/videos_feed/',post=data,user=user,cookie=user.get_slave)
+    data = {"pct_reels": "0",
+            "max_id": "", "seen_reels": [], "tab_type": "clips_tab"}
+    x = send_request('discover/videos_feed/', post=data,
+                     user=user, cookie=user.get_slave)
     return x.json()
 
+
 def get_shortcode_from_reels_2(user=None):
-    data = {"pct_reels":"0",
-    "max_id":"","seen_reels":[],"tab_type":"clips_tab"}
-    x = send_request('clips/discover/',post=data,user=user,cookie=user.get_slave)
+    data = {"pct_reels": "0",
+            "max_id": "", "seen_reels": [], "tab_type": "clips_tab"}
+    x = send_request('clips/discover/', post=data,
+                     user=user, cookie=user.get_slave)
     return x.json()
 
 
 def get_my_guides(user=None):
-    x = requests.get(f'https://i.instagram.com/api/v1/guides/user/{user.cookie.get("ds_user_id")}/',headers=basic_headers,cookies=user.get_slave)
+    x = requests.get(
+        f'https://i.instagram.com/api/v1/guides/user/{user.cookie.get("ds_user_id")}/', headers=basic_headers, cookies=user.get_slave)
     return x.json()
 
-def update_guides(user=None,gid=None,mid=None):
-    data = {"description":user.get_desc,"guide_id":gid,"_csrftoken":"fnwVZAd3k6d9vysbjx1dR5Cr9f9ynlaw","_uid":"29858497652","_uuid":"e5298f52-d663-4653-911b-992e9c82be1b","title":user.comment,"is_draft":"false","mixed_cover_media":"{\"type\":\"IG_MEDIA\",\"media_id\":\""+mid+"\"}","share_to_feed":"false","items":[{"title":user.comment,"mixed_media":[{"type":"IG_MEDIA","media_id":mid}],"description":""}]}
+
+def update_guides(user=None, gid=None, mid=None):
+    data = {"description": user.get_desc, "guide_id": gid, "_csrftoken": "fnwVZAd3k6d9vysbjx1dR5Cr9f9ynlaw", "_uid": "29858497652", "_uuid": "e5298f52-d663-4653-911b-992e9c82be1b", "title": user.comment, "is_draft": "false",
+            "mixed_cover_media": "{\"type\":\"IG_MEDIA\",\"media_id\":\""+mid+"\"}", "share_to_feed": "false", "items": [{"title": user.comment, "mixed_media": [{"type": "IG_MEDIA", "media_id": mid}], "description": ""}]}
     data = json.dumps(data)
-    print(data)  
-    x = send_request('guides/create_or_update_guide/',post=generate_signature(data=data),user=user)
+    print(data)
+    x = send_request('guides/create_or_update_guide/',
+                     post=generate_signature(data=data), user=user)
     return x.json()
+
 
 def get_time_line(user=None):
     tz = t.timezone
     data = json.dumps({'_uuid': generate_UUID(True),
                        '_uid': user.cookie['ds_user_id'],
-                        '_csrftoken': user.cookie['csrftoken'],
+                       '_csrftoken': user.cookie['csrftoken'],
                        'is_prefetch': '0',
                        'battery_level': '100',
                        'is_charging': '1',
@@ -361,29 +376,35 @@ def get_time_line(user=None):
                        'is_on_screen': 'true',
                        'timezone_offset': tz,
                        'experiment': 'ig_android_profile_contextual_feed'})
-    x = send_request('feed/timeline/', post=generate_signature(data),user=user)
+    x = send_request('feed/timeline/',
+                     post=generate_signature(data), user=user)
     return x.json()
 
-def comment(user=None,mediaId=None, commentText=None):
+
+def comment(user=None, mediaId=None, commentText=None):
     data = json.dumps({'_uuid': generate_UUID(True),
-                           '_uid': user.cookie['ds_user_id'],
-                        '_csrftoken': user.cookie['csrftoken'],
-                           'comment_text': commentText})
+                       '_uid': user.cookie['ds_user_id'],
+                       '_csrftoken': user.cookie['csrftoken'],
+                       'comment_text': commentText})
     path = f"media/{mediaId}/comment/"
-    x = send_request(path,post=generate_signature(data=data),user=user)
+    x = send_request(path, post=generate_signature(data=data), user=user)
     return x.json()
 
-def like(user=None,mediaId=None):
+
+def like(user=None, mediaId=None):
     data = json.dumps({'_uuid': generate_UUID(True),
-                           '_uid': user.cookie['ds_user_id'],
-                        '_csrftoken': user.cookie['csrftoken'],
-                           'media_id': mediaId})
+                       '_uid': user.cookie['ds_user_id'],
+                       '_csrftoken': user.cookie['csrftoken'],
+                       'media_id': mediaId})
     path = f"media/{mediaId}/like/"
-    x = send_request(path,post=generate_signature(data=data),user=user)
+    x = send_request(path, post=generate_signature(data=data), user=user)
     return x.json()
+
 
 previewWidth: int = 1080
 previewHeight: int = 1920
+
+
 def start(user=None):
     print("------------------")
     data = json.dumps({'_uuid': generate_UUID(True),
@@ -399,7 +420,7 @@ def start(user=None):
     j = json.loads(x.content)
     print(j)
     try:
-    # print(j)
+        # print(j)
         user.b_id = j['broadcast_id']
     # print(j)
         user.save()
@@ -408,15 +429,16 @@ def start(user=None):
         if j['status'] == 'fail':
             user.active = False
             user.save()
-            Status.objects.create(ig_id=user,status="Fail",response=j)
+            Status.objects.create(ig_id=user, status="Fail", response=j)
     return json.loads(x.text)
 
-def get_user_by_id(user,user_id):
+
+def get_user_by_id(user, user_id):
     data = json.dumps({
         '_uuid': generate_UUID(True),
         '_uid': user.cookie['ds_user_id'],
-        'invitees':user_id,
-        'encoded_server_data_info':"GAMhjhgkjhgkjhggdgdfgdfgdfgdfgfkghfvkjhgljhbmjnblmbnmb="
+        'invitees': user_id,
+        'encoded_server_data_info': "GAMhjhgkjhgkjhggdgdfgdfgdfgdfgfkghfvkjhgljhbmjnblmbnmb="
         # "encoded_server_data_info":"GANsbGEYGElHTElWRToxNzg4NTYzNzk0MTM5MzA3ORgQRmRLS2VrcU1JS3FXQ0dHRQA="
 
     })
@@ -425,5 +447,5 @@ def get_user_by_id(user,user_id):
     print(x.text)
     print(x)
     if x.status_code == 500:
-        return {'status':'ok'}
-    return {'status':'Fail'}
+        return {'status': 'ok'}
+    return {'status': 'Fail'}
