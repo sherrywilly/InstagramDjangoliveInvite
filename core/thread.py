@@ -22,8 +22,12 @@ class InstaGetUserThread(threading.Thread):
         except:
             x = get_shortcode_from_explore(cookie=y.cookie)
         try:
-            x = x['items'][1]['channel']['media']['code']
-        except Exception as e:
+            lis = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+            x = x['items'][random.choice(lis)]['media']['code']
+        except IndexError:
+            lis = [0,1,2,3,4,5]
+            x = x['items'][random.choice(lis)]['media']['code']
+        except IndexError:
             x = x['items'][0]['media']['code']
         try:
                 
