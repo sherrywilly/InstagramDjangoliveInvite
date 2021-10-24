@@ -24,10 +24,10 @@ class InstaGetUserThread(threading.Thread):
         try:
             lis = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
             x = x['items'][random.choice(lis)]['media']['code']
-        except IndexError:
+        except KeyError:
             lis = [0,1,2,3,4,5]
             x = x['items'][random.choice(lis)]['media']['code']
-        except IndexError:
+        except :
             x = x['items'][0]['media']['code']
         try:
                 
