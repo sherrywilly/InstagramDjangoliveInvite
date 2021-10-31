@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
      'django.contrib.humanize',
+     'django_cleanup.apps.CleanupConfig',
     'core',
     'django_celery_beat',
         'flatpickr',

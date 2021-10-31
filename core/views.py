@@ -1,11 +1,12 @@
 from datetime import datetime
 import asyncio
+import os
 from django.db import transaction
 from django.http import response
 from django.http.response import JsonResponse
 # from core.decorators import session_not_exist
 import json
-
+from django.core.files.storage import FileSystemStorage, default_storage
 from requests.api import get
 from core.functions import *
 from core.models import *
@@ -273,7 +274,7 @@ def UserManage(request, pk):
     else:
         return HttpResponse(" you are not allowed to process this request")
 
-
+from datetime import datetime
 def get_users():
     _now = datetime.now().time()
     users = IgUser.objects.filter(
@@ -321,3 +322,41 @@ def insta_invite(request):
         return JsonResponse({"status": "Fail"})
 
     return JsonResponse({"status": "ok"})
+from .functions import send_request
+import time
+import base64
+# from core.compact import compat_urllib_request
+
+import datetime
+def userImage(request,*args, **kwargs):
+    users = get_users()
+    print(users)
+    user = users[0]
+    x = get_last_img_from_user(cookie=user.get_slave)
+    y = x['data']['user']['edge_owner_to_timeline_media']['edges'][0]['node']['display_url']
+    filename = 't.jpg'
+    n = urllib.request.urlretrieve(y, filename)
+    o_file = open(os.path.join(filename), "rb")
+    c = o_file.read()
+    fs = FileSystemStorage("media/IG/Images")
+    file_name = default_storage.save(os.path.join('IG/Images/'+filename), o_file)
+    file = default_storage.open(file_name)
+    file_url = default_storage.url(file_name).lstrip('media/')
+    IgImage.objects.create(image = file_url)
+    return JsonResponse({'status':'ok'})
+
+
+def ImageUpload(request):
+    __now = datetime.datetime.now()
+    range = datetime.timedelta(minutes=5)
+    before_five = __now-range
+    x = PicShedule.objects.filter(datetime__gte=before_five,datetime__lte=__now,is_done=False )
+    print(x)
+    for i in x:
+        try:
+            pic = str(i.image.url).lstrip('/')
+            upload_photo(photo=pic,user=i.iguser,options={'rename':False},caption=i.caption)
+        except:
+            pass
+        i.delete()
+    return JsonResponse({'status':"ok"})

@@ -4,8 +4,10 @@ from django.contrib import admin
 from core.models import *
 from django.contrib.auth.models import User, Group
 
-
+class ScheduleInline(admin.TabularInline):
+    model = PicShedule
 class IgAdmin(admin.ModelAdmin):
+    inlines = [ScheduleInline,]
     exclude = ( 'pro_pic',)
     readonly_fields = ('id',)
 
@@ -22,6 +24,7 @@ class statusFilter(admin.ModelAdmin):
 admin.site.register(IgUser, IgAdmin)
 admin.site.register(Status,statusFilter)
 admin.site.register(SlaveUser, SlaveAdmin)
+admin.site.register(IgImage)
 # admin.site.register(Tag)
 # admin.site.unregister(User)
 admin.site.unregister(Group)

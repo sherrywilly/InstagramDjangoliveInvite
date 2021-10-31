@@ -31,3 +31,6 @@ psycopg2-binary
 gunicorn
 django-crispy-forms
 django-flatpickr==1.0.1
+django_cleanup
+pillow
+pickle5
