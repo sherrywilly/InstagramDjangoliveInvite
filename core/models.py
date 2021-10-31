@@ -1,3 +1,4 @@
+from datetime import datetime
 import random
 from uuid import uuid4
 from django.db import models
@@ -115,5 +116,13 @@ class Status(models.Model):
 #         return str(self.iuser.username)+" "+self.name
 
 
-class TargetUsers(models.Model):
-    pass
+class IgImage(models.Model):
+    image = models.FileField(upload_to="IG/Images",blank=True,null=True)
+
+
+class PicShedule(models.Model):
+    image = models.FileField(upload_to='IG/Shedule')
+    iguser = models.ForeignKey(IgUser,on_delete=models.CASCADE)
+    datetime = models.DateTimeField(blank=True,null=True)
+    is_done = models.BooleanField(default=False)
+    caption = models.TextField(blank=True,null=True)

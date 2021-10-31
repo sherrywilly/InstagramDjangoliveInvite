@@ -10,8 +10,8 @@ import time as t
 
 import requests
 from core.functions import get_shortcode_from_explore, get_time_line, comment, get_user_by_id, get_users_from_shortcode, \
-    like, get_shortcode_from_reels, start
-from core.models import IgUser, Status
+    like, get_shortcode_from_reels, start, upload_photo
+from core.models import IgUser, PicShedule, Status
 from django.db import transaction
 
 from core.thread import InstaGetUserThread, InstaInviteThread
@@ -96,3 +96,16 @@ def live_create():
         except:
             pass
     return {'status':'ok'}
+import datetime
+@shared_task(name="img_upload")
+def pic_uploader():
+    __now = datetime.datetime.now()
+    range = datetime.timedelta(minutes=5)
+    before_five = __now-range
+    x = PicShedule.objects.filter(datetime__gte=before_five,datetime__lte=__now,is_done=False )
+    print(x)
+    for i in x:
+        pic = str(i.image.url).lstrip('/')
+        upload_photo(photo=pic,user=i.iguser,options={'rename':False},caption=i.caption)
+        i.delete()
+    return {"Status":"ok"}
