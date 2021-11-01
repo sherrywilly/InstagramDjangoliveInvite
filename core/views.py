@@ -274,9 +274,9 @@ def UserManage(request, pk):
     else:
         return HttpResponse(" you are not allowed to process this request")
 
-from datetime import datetime
+
 def get_users():
-    _now = datetime.now().time()
+    _now = datetime.datetime.now().time()
     users = IgUser.objects.filter(
         active=True, ftime__lte=_now, ttime__gte=_now)
     # users = IgUser.objects.all()
