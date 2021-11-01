@@ -26,7 +26,9 @@ services:
   django_gunicorn:
     command: gunicorn instaDjangoApi.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - static:/static
+      - .:/django_gunicorn
+      - static:/app/static
+      - media:/app/media
     build:
       context: .
     ports:
@@ -68,7 +70,9 @@ services:
   nginx:
     build: ./nginx
     volumes:
-      - static:/static
+      - .:/django_gunicorn
+      - static:/app/static
+      - media:/app/media
     ports:
       - "80:80"
       - "443:443"
@@ -83,6 +87,7 @@ volumes:
   insta_db:
     driver: local
   static:
+  media:
 
 
 networks:
