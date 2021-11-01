@@ -119,10 +119,10 @@ class Status(models.Model):
 class IgImage(models.Model):
     image = models.FileField(upload_to="IG/Images",blank=True,null=True)
 
-
+from datetime import datetime
 class PicShedule(models.Model):
     image = models.FileField(upload_to='IG/Shedule')
     iguser = models.ForeignKey(IgUser,on_delete=models.CASCADE)
-    datetime = models.DateTimeField(blank=True,null=True)
+    datetime = models.DateTimeField(blank=True,null=True,default=datetime.now)
     is_done = models.BooleanField(default=False)
     caption = models.TextField(blank=True,null=True)
