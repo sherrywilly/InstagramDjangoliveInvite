@@ -2,8 +2,6 @@ from .functions import send_request
 import subprocess
 import datetime
 import base64
-import time
-from datetime import datetime
 import asyncio
 import os
 from django.db import transaction
@@ -281,6 +279,7 @@ def UserManage(request, pk):
 
 
 def get_users():
+    import datetime
     _now = datetime.datetime.now().time()
     users = IgUser.objects.filter(
         active=True, ftime__lte=_now, ttime__gte=_now)

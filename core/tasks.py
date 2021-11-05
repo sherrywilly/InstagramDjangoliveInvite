@@ -67,6 +67,7 @@ def invite():
 
 @shared_task(name='userlist')
 def get_users():
+    import datetime
     _now = datetime.datetime.now().time()
     users = IgUser.objects.filter(
         active=True, ftime__lte=_now, ttime__gte=_now)
@@ -86,6 +87,7 @@ def requester(url):
 
 @shared_task(name='live_creator')
 def live_create():
+    from datetime import datetime
     _now = datetime.now().time()
     users = IgUser.objects.filter(
         active=True, ftime__lte=_now, ttime__gte=_now)

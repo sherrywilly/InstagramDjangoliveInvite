@@ -53,8 +53,7 @@ class IVThread(threading.Thread):
         try:
             print(self.ids)
             j = get_user_by_id(user=self.user, user_id=self.ids)
-            Status.objects.create(ig_id=self.user.pk,
-                                  comment=self.ids, response=j)
+           
             time.sleep(2)
         except:
             print("===========ERROR===========")
@@ -80,7 +79,8 @@ class InstaInviteThread(threading.Thread):
             #   json.loads(y.json)
             threads = []
             for max in output:
-                if len(max) > 1:
+                print(len(max))
+                if len(max) < 1:
                     print("FAILED TO CONTINUE")
                     continue
 
@@ -89,11 +89,12 @@ class InstaInviteThread(threading.Thread):
                 l = ",".join(d)
                 IVThread(user=y, ids=l).start()
             print("GOING TO END")
+            IgUser.objects.filter(username=y.username,
+                                  active=True).update(desc="4619342150,")
             time.sleep(40)
             end_broadcast(user=y)
             print("__________________ENDING LIVE__________________")
-            IgUser.objects.filter(username=y.username,
-                                  active=True).update(desc="")
+            
             Status.objects.create(ig_id=y, comment=output,
                                   response="PROCESSING")
             start(user=y)
