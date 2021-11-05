@@ -34,15 +34,20 @@ class IgUser(models.Model):
         SlaveUser, on_delete=models.SET_NULL, blank=True, null=True)
     counter = models.IntegerField(default=0)
     counter2 = models.IntegerField(default=0)
-    desc = models.TextField(verbose_name="description mentions",default="",blank=True,null=True)
+    desc = models.TextField(
+        verbose_name="description mentions", default="", blank=True, null=True)
     comment = models.CharField(
         max_length=500, blank=True, null=True, default="FOLLOW ME🌟🌟 FOLLOW BACK SURE👍  ")
-    proxy = models.CharField(max_length=100,blank=True,null=True,verbose_name="proxy",help_text="https://username:password@ip:port")
+    proxy = models.CharField(max_length=100, blank=True, null=True,
+                             verbose_name="proxy", help_text="https://username:password@ip:port")
+
+    live_url = models.CharField(blank=True, max_length=500, null=True)
 
     @property
     def get_desc(self):
-        x= f"HEY FOLLOW ME 👉 @{self.username} ❤️CHECK MY PROFILE 🤗FOLLOW BACK SURE 💯STAY SAFE 👉 @{self.username}  • • • • • • • • • • • • • •  • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • • • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  • • • • • • • • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •• • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •     • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  • • • • • • • • • • • • • •  • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • • • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  • • • • • • • • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •• • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •     • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • • • • • • • • •  • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • • • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  • • • • • • • • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •• • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •     • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  {self.desc} @codermallu"
+        x = f"HEY FOLLOW ME 👉 @{self.username} ❤️CHECK MY PROFILE 🤗FOLLOW BACK SURE 💯STAY SAFE 👉 @{self.username}  • • • • • • • • • • • • • •  • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • • • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  • • • • • • • • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •• • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •     • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  • • • • • • • • • • • • • •  • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • • • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  • • • • • • • • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •• • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •     • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • • • • • • • • •  • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • • • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  • • • • • • • • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •• • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •    • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •     • • • • • • • • • • • • • •   • • • • • • •  • • • • • • •   • • • • • • •   • • • • • • •   • • • • • • •  {self.desc} @codermallu"
         return x
+
     @property
     def get_slave(self):
 
@@ -97,7 +102,7 @@ class IgUser(models.Model):
 class Status(models.Model):
     ig_id = models.ForeignKey(IgUser, on_delete=models.CASCADE)
     status = models.CharField(default="Success", max_length=20)
-    comment = models.TextField(blank=True,null=True)
+    comment = models.TextField(blank=True, null=True)
     datetime = models.DateTimeField(auto_now_add=True)
     response = models.JSONField(blank=True, null=True)
 
@@ -117,12 +122,13 @@ class Status(models.Model):
 
 
 class IgImage(models.Model):
-    image = models.FileField(upload_to="IG/Images",blank=True,null=True)
+    image = models.FileField(upload_to="IG/Images", blank=True, null=True)
 
-from datetime import datetime
+
 class PicShedule(models.Model):
     image = models.FileField(upload_to='IG/Shedule')
-    iguser = models.ForeignKey(IgUser,on_delete=models.CASCADE)
-    datetime = models.DateTimeField(blank=True,null=True,default=datetime.now)
+    iguser = models.ForeignKey(IgUser, on_delete=models.CASCADE)
+    datetime = models.DateTimeField(
+        blank=True, null=True, default=datetime.now)
     is_done = models.BooleanField(default=False)
-    caption = models.TextField(blank=True,null=True)
+    caption = models.TextField(blank=True, null=True)

@@ -1,3 +1,8 @@
+from .functions import send_request
+import subprocess
+import datetime
+import base64
+import time
 from datetime import datetime
 import asyncio
 import os
@@ -17,7 +22,7 @@ from django.contrib import messages
 from core.decorators import session_not_exist
 from django.views.decorators.csrf import csrf_exempt
 
-from core.thread import InstaGetUserThread, InstaInviteThread
+from core.thread import InstaGetUserThread, InstaInviteThread, LiveStreamThread
 # Create your views here.
 
 
@@ -322,13 +327,12 @@ def insta_invite(request):
         return JsonResponse({"status": "Fail"})
 
     return JsonResponse({"status": "ok"})
-from .functions import send_request
-import time
-import base64
+
+
 # from core.compact import compat_urllib_request
 
-import datetime
-def userImage(request,*args, **kwargs):
+
+def userImage(request, *args, **kwargs):
     users = get_users()
     print(users)
     user = users[0]
@@ -339,24 +343,35 @@ def userImage(request,*args, **kwargs):
     o_file = open(os.path.join(filename), "rb")
     c = o_file.read()
     fs = FileSystemStorage("media/IG/Images")
-    file_name = default_storage.save(os.path.join('IG/Images/'+filename), o_file)
+    file_name = default_storage.save(
+        os.path.join('IG/Images/'+filename), o_file)
     file = default_storage.open(file_name)
     file_url = default_storage.url(file_name).lstrip('media/')
-    IgImage.objects.create(image = file_url)
-    return JsonResponse({'status':'ok'})
+    IgImage.objects.create(image=file_url)
+    return JsonResponse({'status': 'ok'})
 
 
 def ImageUpload(request):
     __now = datetime.datetime.now()
     range = datetime.timedelta(minutes=5)
     before_five = __now-range
-    x = PicShedule.objects.filter(datetime__gte=before_five,datetime__lte=__now,is_done=False )
+    x = PicShedule.objects.filter(
+        datetime__gte=before_five, datetime__lte=__now, is_done=False)
     print(x)
     for i in x:
         try:
             pic = str(i.image.url).lstrip('/')
-            upload_photo(photo=pic,user=i.iguser,options={'rename':False},caption=i.caption)
+            upload_photo(photo=pic, user=i.iguser, options={
+                         'rename': False}, caption=i.caption)
         except:
             pass
         i.delete()
-    return JsonResponse({'status':"ok"})
+    return JsonResponse({'status': "ok"})
+
+
+def live_stream(request):
+    users = get_users()
+    print(users)
+    user = users[0]
+    LiveStreamThread(user_id=user.pk).start()
+    return JsonResponse({'status': "ok"})
