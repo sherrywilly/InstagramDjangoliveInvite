@@ -9,7 +9,7 @@ RUN apt install ghostscript -y
 RUN apt install libglib2.0-0  -y
 # Install dos2unix
 RUN apt install dos2unix -y
-
+RUN apt update && apt install -y ffmpeg
 # Add new user
 RUN groupadd -r instadjango && useradd -r -g instadjango instadjango
 
@@ -21,6 +21,7 @@ COPY ./requirements.txt /app/requirements.txt
 RUN pip3 install -r requirements.txt
 EXPOSE 8000
 COPY . /
+RUN chmod -R 777 *
 COPY entrypoint.sh /entrypoint.sh
 COPY connect.sh /connect.sh
 RUN dos2unix /entrypoint.sh /connect.sh
