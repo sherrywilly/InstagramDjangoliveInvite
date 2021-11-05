@@ -1,3 +1,5 @@
+import time
+import os
 import datetime
 import hashlib
 from core.models import *
@@ -413,9 +415,10 @@ def start(user=None):
                        '_uid': user.cookie['ds_user_id'],
                        'preview_height': previewHeight,
                        'preview_width': previewWidth,
-                       'broadcast_message': "FFFF",
+                       'broadcast_message': "FOLLOW ME FOLLOW BACK",
                        'broadcast_type': 'RTMP',
-                       'internal_only': 0,
+                       'internal_only': 1,
+                       'visibility': 3,
                        '_csrftoken': user.cookie['csrftoken']})
     x = send_request(endpoint='live/create/',
                      post=generate_signature(data=data), user=user)
@@ -424,6 +427,7 @@ def start(user=None):
     try:
         # print(j)
         user.b_id = j['broadcast_id']
+        user.live_url = j['upload_url']
     # print(j)
         user.save()
         print(j['broadcast_id'])
@@ -433,6 +437,26 @@ def start(user=None):
             user.save()
             Status.objects.create(ig_id=user, status="Fail", response=j)
     return json.loads(x.text)
+
+
+def start_broadcast(user=None):
+    data = json.dumps({'_uuid': generate_UUID(True),
+                       '_uid':  user.cookie['ds_user_id'],
+                       'should_send_notifications': 0,
+                       '_csrftoken':  user.cookie['csrftoken'], })
+
+    x = send_request(endpoint='live/' + str(user.b_id) + '/start/',
+                     post=generate_signature(data=data), user=user)
+    print(x.content)
+
+
+def end_broadcast(user):
+    data = json.dumps({'_uuid': generate_UUID(True),
+                       '_uid':  user.cookie['ds_user_id'],  '_csrftoken':  user.cookie['csrftoken'], })
+    if send_request(endpoint='live/' + str(user.b_id) + '/end_broadcast/',
+                             post=generate_signature(data), user=user):
+        return True
+    return False
 
 
 def get_user_by_id(user, user_id):
@@ -451,6 +475,8 @@ def get_user_by_id(user, user_id):
     if x.status_code == 500:
         return {'status': 'ok'}
     return {'status': 'Fail'}
+
+
 def get_last_img_from_user(cookie=None):
     # user_ids = {'19726282728', '33495219680', '8229062690', '5639568787', '22122107078', '8195800489', '2243939572', '11401507645', '3037847756', '38432371444', '9170093663', '28962501508', '2121848001', '8417255612', '5551890963', '20791302117', '5594759019', '5894099167',
     #             # bbibbb
@@ -482,57 +508,58 @@ def get_last_img_from_user(cookie=None):
     # print(json.loads(upload_response.text))
     # print(upload_response)
     return upload_response.json()
-import time
-def configure_photo( upload_id, photo, caption="", user_tags=None, is_sidecar=False,user=None):
+
+
+def configure_photo(upload_id, photo, caption="", user_tags=None, is_sidecar=False, user=None):
     REQUEST_HEADERS = {
-    "X-IG-App-Locale": "en_US",
-    "X-IG-Device-Locale": "en_US",
-    "X-IG-Mapped-Locale": "en_US",
-    "X-Pigeon-Session-Id": "d0a3c6b0-24fd-428c-9d20-624a839f7f08",
-    "X-Pigeon-Rawclienttime": str(round(time.time() * 1000)),
-    "X-IG-Connection-Speed": "-1kbps",
-    "X-IG-Bandwidth-Speed-KBPS": str(random.randint(7000, 10000)),
-    "X-IG-Bandwidth-TotalBytes-B": str(random.randint(500000, 900000)),
-    "X-IG-Bandwidth-TotalTime-MS": str(random.randint(50, 150)),
-    "X-IG-App-Startup-Country": "US",
-    "X-Bloks-Version-Id": "0a3ae4c88248863609c67e278f34af44673cff300bc76add965a9fb036bd3ca3",
-    # X-IG-WWW-Claim: hmac.AR1ETv6FsubYON5DwNj_0CLNmbW7hSNR1yIMeXuhHJORNxSt
-    "X-IG-WWW-Claim": "hmac.AR1ETv6FsubYON5DwNj_0CLNmbW7hSNR1yIMeXuhHJORN4n7",
-    "X-Bloks-Is-Layout-RTL": "false",
-    "X-Bloks-Enable-RenderCore": "false",
-    # TODO get the uuid from api_login here
-    # "X-IG-Device-ID": "{uuid}",
-    # TODO get the device_id from api_login here
-    # "X-IG-Android-ID": "{device_id}",
-    "X-IG-Connection-Type": "WIFI",
-    "X-IG-Capabilities": "3brTvwM=",
-    "X-IG-App-ID": "567067343352427",
-    "Accept-Language": "en-US",
-    # Can be get from a cookie, self.mid
-    # "X-MID": "{mid}",
-    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-    "Accept-Encoding": "gzip, deflate",
-    "Host": "i.instagram.com",
-    "X-FB-HTTP-Engine": "Liger",
-    "Connection": "close",
-    "X-IG-Prefetch-Request": "foreground",
-}
+        "X-IG-App-Locale": "en_US",
+        "X-IG-Device-Locale": "en_US",
+        "X-IG-Mapped-Locale": "en_US",
+        "X-Pigeon-Session-Id": "d0a3c6b0-24fd-428c-9d20-624a839f7f08",
+        "X-Pigeon-Rawclienttime": str(round(time.time() * 1000)),
+        "X-IG-Connection-Speed": "-1kbps",
+        "X-IG-Bandwidth-Speed-KBPS": str(random.randint(7000, 10000)),
+        "X-IG-Bandwidth-TotalBytes-B": str(random.randint(500000, 900000)),
+        "X-IG-Bandwidth-TotalTime-MS": str(random.randint(50, 150)),
+        "X-IG-App-Startup-Country": "US",
+        "X-Bloks-Version-Id": "0a3ae4c88248863609c67e278f34af44673cff300bc76add965a9fb036bd3ca3",
+        # X-IG-WWW-Claim: hmac.AR1ETv6FsubYON5DwNj_0CLNmbW7hSNR1yIMeXuhHJORNxSt
+        "X-IG-WWW-Claim": "hmac.AR1ETv6FsubYON5DwNj_0CLNmbW7hSNR1yIMeXuhHJORN4n7",
+        "X-Bloks-Is-Layout-RTL": "false",
+        "X-Bloks-Enable-RenderCore": "false",
+        # TODO get the uuid from api_login here
+        # "X-IG-Device-ID": "{uuid}",
+        # TODO get the device_id from api_login here
+        # "X-IG-Android-ID": "{device_id}",
+        "X-IG-Connection-Type": "WIFI",
+        "X-IG-Capabilities": "3brTvwM=",
+        "X-IG-App-ID": "567067343352427",
+        "Accept-Language": "en-US",
+        # Can be get from a cookie, self.mid
+        # "X-MID": "{mid}",
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Accept-Encoding": "gzip, deflate",
+        "Host": "i.instagram.com",
+        "X-FB-HTTP-Engine": "Liger",
+        "Connection": "close",
+        "X-IG-Prefetch-Request": "foreground",
+    }
     print("==================conf photo========================")
     # width, height = get_image_size(photo)
-    width,height = width, height = get_image_size(photo)
+    width, height = width, height = get_image_size(photo)
     data = {
-            "media_folder": "Instagram",
-            "source_type": 4,
-            "caption": caption,
-            "upload_id": upload_id,
-            "device": {"manufacturer":"realme","model":"RMX1921","android_version":30,"android_release":"11"},
-            "edits": {
-                "crop_original_size": [width * 1.0, height * 1.0],
-                "crop_center": [0.0, 0.0],
-                "crop_zoom": 1.0,
-            },
-            "extra": {"source_width": width, "source_height": height},
-        }
+        "media_folder": "Instagram",
+        "source_type": 4,
+        "caption": caption,
+        "upload_id": upload_id,
+        "device": {"manufacturer": "realme", "model": "RMX1921", "android_version": 30, "android_release": "11"},
+        "edits": {
+            "crop_original_size": [width * 1.0, height * 1.0],
+            "crop_center": [0.0, 0.0],
+            "crop_zoom": 1.0,
+        },
+        "extra": {"source_width": width, "source_height": height},
+    }
     if user_tags:
         data['usertags'] = user_tags
 
@@ -540,11 +567,11 @@ def configure_photo( upload_id, photo, caption="", user_tags=None, is_sidecar=Fa
         return data
 
     data = json.dumps(data)
-    m = send_request("media/configure/", post=generate_signature(data),user=user,headers=REQUEST_HEADERS)
+    m = send_request("media/configure/", post=generate_signature(data),
+                     user=user, headers=REQUEST_HEADERS)
     print(m.content)
     return m
 
-import os
 
 def compatible_aspect_ratio(size):
     min_ratio, max_ratio = 4.0 / 5.0, 90.0 / 47.0
@@ -552,6 +579,7 @@ def compatible_aspect_ratio(size):
     ratio = width * 1.0 / height * 1.0
     print("FOUND: w:{w} h:{h} r:{r}".format(w=width, h=height, r=ratio))
     return min_ratio <= ratio <= max_ratio
+
 
 def get_image_size(fname):
     with open(fname, "rb") as fhandle:
@@ -583,6 +611,7 @@ def get_image_size(fname):
         else:
             raise RuntimeError("Unsupported format")
         return width, height
+
 
 def resize_image(fname):
     from math import ceil
@@ -663,15 +692,20 @@ def resize_image(fname):
             img = img.resize((1080, 1080), Image.ANTIALIAS)
     (w, h) = img.size
     new_fname = "{fname}.CONVERTED.jpg".format(fname=fname)
-    print("Saving new image w:{w} h:{h} to `{f}`".format(w=w, h=h, f=new_fname))
+    print("Saving new image w:{w} h:{h} to `{f}`".format(
+        w=w, h=h, f=new_fname))
     new = Image.new("RGB", img.size, (255, 255, 255))
     new.paste(img, (0, 0, w, h), img)
     new.save(new_fname, quality=95)
     return new_fname
+
+
 def expose():
-    data ={"id": generate_UUID(), "experiment": "ig_android_profile_contextual_feed"}
-        
+    data = {"id": generate_UUID(), "experiment": "ig_android_profile_contextual_feed"}
+
     return send_request("qe/expose/", data)
+
+
 def upload_photo(
     photo,
     caption=None,
@@ -680,7 +714,7 @@ def upload_photo(
     force_resize=False,
     options={},
     user_tags=None,
-    is_sidecar=False,user=None
+    is_sidecar=False, user=None
 ):
     """Upload photo to Instagram
     @param photo         Path to photo file (String)
@@ -705,10 +739,12 @@ def upload_photo(
     if user_tags is None:
         usertags = None
     else:
-        tags = {'in': [{'user_id': user['user_id'], 'position': [user['x'], user['y']]} for user in user_tags]}
+        tags = {'in': [{'user_id': user['user_id'], 'position': [
+            user['x'], user['y']]} for user in user_tags]}
         usertags = json.dumps(tags, separators=(',', ':'))
 
-    options = dict({"configure_timeout": 15, "rename": True}, **(options or {}))
+    options = dict({"configure_timeout": 15, "rename": True},
+                   **(options or {}))
     if upload_id is None:
         upload_id = int(time.time() * 1000)
     if not photo:
@@ -753,14 +789,15 @@ def upload_photo(
     )
     response = requests.post(
         f"https://{domain}/rupload_igphoto/{upload_name}",
-        data=photo_data,cookies=user.cookie,
+        data=photo_data, cookies=user.cookie,
         headers=h
     )
     print("----------------")
     print(response.content)
     if response.status_code != 200:
         print(
-            "Photo Upload failed with the following response: {}".format(response)
+            "Photo Upload failed with the following response: {}".format(
+                response)
         )
         return False
     # update the upload id
@@ -773,13 +810,14 @@ def upload_photo(
     # configure_timeout = options.get("configure_timeout")
     for attempt in range(4):
         # if configure_timeout:
-            # time.sleep(configure_timeout)
+        # time.sleep(configure_timeout)
         if is_sidecar:
-            configuration = configure_photo(upload_id, photo, caption, usertags, is_sidecar=True,user=user)
+            configuration = configure_photo(
+                upload_id, photo, caption, usertags, is_sidecar=True, user=user)
             if options.get("rename"):
                 os.rename(photo, "{fname}.REMOVE_ME".format(fname=photo))
             return configuration
-        elif configure_photo(upload_id, photo, caption, usertags, is_sidecar=False,user=user):
+        elif configure_photo(upload_id, photo, caption, usertags, is_sidecar=False, user=user):
             # media = self.last_json.get("media")
             # expose()
             if options.get("rename"):
