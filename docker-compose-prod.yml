@@ -19,11 +19,13 @@ services:
 
 
   redis:
+    restart: always
     image: redis:latest
     container_name: rd0101
     networks:
       - insta_tier
   django_gunicorn:
+    restart: always
     command: gunicorn instaDjangoApi.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/django_gunicorn
@@ -48,6 +50,7 @@ services:
       - db
 
   celery:
+    restart: always
     build: .
     command: celery -A instaDjangoApi worker -l info 
     depends_on:
@@ -58,7 +61,7 @@ services:
 
   beat:
     build: .
-    restart: unless-stopped
+    restart: always
     depends_on:
       - redis
       - db
@@ -68,6 +71,7 @@ services:
       - insta_tier
 
   nginx:
+    restart: always
     build: ./nginx
     volumes:
       - .:/django_gunicorn
