@@ -426,6 +426,7 @@ def start(user=None):
     print(j)
     try:
         # print(j)
+        user = IgUser.objects.get(id =user.pk)
         user.b_id = j['broadcast_id']
         user.live_url = j['upload_url']
     # print(j)
