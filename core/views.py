@@ -293,11 +293,44 @@ def fetch_users(request):
         return JsonResponse({"status": "ok", "message": "No users available"})
     key = request.GET.get('key')
     if key == "mom":
-        for i in users:
-            # print(i.pk)
-            # x = i.pk
-            InstaGetUserThread(i.pk).start()
-            # time.sleep(5)
+        for y in users:
+            random_bit = random.getrandbits(1)
+            random_boolean = bool(random_bit)
+            try:
+                if random_boolean:
+                    print("------------- SHORTCODE FROM REELS -------------")
+                    x = get_shortcode_from_reels_2(user=y)
+                else:
+                    print("------------- SHORTCODE FROM EXPLORE -------------")
+                    x = get_shortcode_from_explore(cookie=y.cookie)
+            except:
+                x = get_shortcode_from_explore(cookie=y.cookie)
+            try:
+                lis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+                x = x['items'][random.choice(lis)]['media']['code']
+            except KeyError:
+                lis = [0, 1, 2, 3, 4]
+                x = x['items'][random.choice(lis)]['media']['code']
+            except:
+                x = x['items'][0]['media']['code']
+            try:
+
+                x = get_users_from_shortcode(cookie=y.get_slave, shortcode=x)
+                y = IgUser.objects.get(id=y.id)
+                y.desc = y.desc+",".join(x)+","
+                y.save()
+                f = open("media/main.txt", 'a+')
+                f.seek(0)
+                for m in x:
+                    f.write(str(m))
+                    f.write('\n')
+
+                f.close()
+                print("---------CLOSING FILE---------------")
+            except Exception as x:
+                Status.objects.create(status='Fail', ig_id=y,
+                                      comment=x, response="FAILED TO FETCH USERS")
+           
     else:
         return JsonResponse({"status": "Fail"})
 
