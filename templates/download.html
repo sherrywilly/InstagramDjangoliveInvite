@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download and Schedule image</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+		<h1 class="text-center m-5">INSTAGRAM IMAGE SCHEDULER</h1>
+		
+	</div>
+	<section class="bg-dark text-center p-5 mt-4" style="height: 80vh;">
+		<div class="container p-3">
+			<h3 class="text-white">SCHEDULE NOW</h3>
+			<form  method="post">
+                {% csrf_token %}
+				<input type="url" name="url" placeholder="enter your instagram photo url" required>
+				<input type="submit" class="btn btn-default" value="download">
+			</form>
+		</div>
+	</section>
+	
+	
+	<footer>
+		<p>© sherrywilson 2021</p>
+	</footer>
+</body>
+</html>

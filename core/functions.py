@@ -511,6 +511,7 @@ def get_last_img_from_user(cookie=None):
 
 
 def configure_photo(upload_id, photo, caption="", user_tags=None, is_sidecar=False, user=None):
+    import time as time
     REQUEST_HEADERS = {
         "X-IG-App-Locale": "en_US",
         "X-IG-Device-Locale": "en_US",
@@ -746,7 +747,8 @@ def upload_photo(
     options = dict({"configure_timeout": 15, "rename": True},
                    **(options or {}))
     if upload_id is None:
-        upload_id = int(time.time() * 1000)
+        import time as ttime
+        upload_id = int(ttime.time() * 1000)
     if not photo:
         return False
     if not compatible_aspect_ratio(get_image_size(photo)):
@@ -824,3 +826,20 @@ def upload_photo(
                 os.rename(photo, "{fname}.REMOVE_ME".format(fname=photo))
             return True
     return False
+
+
+# # get media by shortcode
+# def get_media_by_shortcode(cookie,shortcode="CWw4CG2Pb37"):
+#     return send_request("media/shortcode/{shortcode}/".format(shortcode=shortcode))
+def get_media_by_shortcode(cookie,shortcode):
+    x = {
+        'query_hash': '477b65a610463740ccdb83135b2014db',
+        'variables': '{"shortcode":"' + shortcode + '"}'
+    }
+    uri = urlencode(x)
+    fetch_url = f"https://www.instagram.com/graphql/query/?{uri}"
+    upload_response = requests.get(
+        url=fetch_url, headers=basic_headers, cookies=cookie)
+    _y = json.loads(upload_response.text)
+
+    return _y

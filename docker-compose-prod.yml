@@ -63,7 +63,6 @@ services:
       - redis
       - db
     command: celery -A instaDjangoApi beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-    restart: unless-stopped
     networks:
       - insta_tier
 

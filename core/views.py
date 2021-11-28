@@ -281,6 +281,7 @@ def UserManage(request, pk):
 
 
 def get_users():
+    import datetime
     _now = datetime.datetime.now().time()
     users = IgUser.objects.filter(
         active=True, ftime__lte=_now, ttime__gte=_now)
@@ -375,3 +376,59 @@ def live_stream(request):
     user = users[0]
     LiveStreamThread(user_id=user.pk).start()
     return JsonResponse({'status': "ok"})
+
+
+
+# clean shortcode from url
+def clean_shortcode(url):
+    url = url.split('/')
+    return url[-2]
+
+# create  a fuction to download instagram image from shortcode
+def download_image(request):
+    if request.method == "POST":
+        url = request.POST.get('url')
+        print(url)
+        if url:
+            shortcode = clean_shortcode(url)
+            if shortcode:
+                users = get_users()
+                print(users)
+                user = users[0]
+                c = get_media_by_shortcode(cookie=user.get_slave, shortcode=shortcode)
+                y = c['data']['shortcode_media']['display_url']
+                print(y)
+                filename = 't.jpg'
+                n = urllib.request.urlretrieve(y, filename)
+                o_file = open(os.path.join(filename), "rb")
+                c = o_file.read()
+                fs = FileSystemStorage("media/IG/Images")
+                file_name = default_storage.save(
+                    os.path.join('IG/Images/'+filename), o_file)
+                file = default_storage.open(file_name)
+                file_url = default_storage.url(file_name).lstrip('media/')
+                IgImage.objects.create(image=file_url)
+                return redirect(reverse('download'))
+    else:
+        return render(request, 'download.html')
+    return JsonResponse({'status': 'Fail'})
+
+
+
+
+def pic_uploader(request):
+    if request.GET.get('key') == "mom":
+        users = get_users()
+        for i in users:
+            image = IgImage.objects.first()
+            if image:
+                image_url = image.image.url.lstrip('/')
+                upload_photo(photo=image_url, user=i, options={
+                             'rename': False}, caption="")
+                image.delete()
+            
+            else:
+                return JsonResponse({"status": "Fail"})
+        return JsonResponse({"status": "ok"})
+
+    return JsonResponse({"status": "Fail"})        
