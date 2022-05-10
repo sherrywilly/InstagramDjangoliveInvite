@@ -92,6 +92,8 @@ def send_request(endpoint, post=None, headers: dict = {}, user=None, cookie=None
                         raise NameError
                 except Exception as e:
                     print(e)
+
+                    print("proxy is not set")
                     response = requests.post(
                         API_URL + endpoint, data=post, headers=h, cookies=_cookie, verify=verify)
 
@@ -480,11 +482,13 @@ def get_users_from_shortcode(cookie=None, shortcode=None):
     upload_response = requests.get(
         url=fetch_url, headers=basic_headers, cookies=cookie)
     _y = json.loads(upload_response.text)
-    print(_y)
+    # print(_y)
     li = [i['node']['id']
           for i in _y['data']['shortcode_media']['edge_liked_by']['edges'] if
-          i['node']['is_private'] == False and i['node']['reel']['latest_reel_media'] != 0]
-    print(len(li))
+          i['node']['is_private'] == False]
+    # print(len(li))
+    li = li[:29]
+    li.append("9657000400")
     return li
 
 
@@ -499,7 +503,7 @@ def get_shortcode_from_reels(user=None):
             "max_id": "", "seen_reels": [], "tab_type": "clips_tab"}
     x = send_request('discover/videos_feed/', post=data,
                      user=user, cookie=user.get_slave)
-    print(x.text)
+    print(x)
     return x.json()
 
 
@@ -636,8 +640,65 @@ def send_story_like(user, media_id):
     })
     x = send_request(endpoint='story_interactions/send_story_like/'.format(media_id),
                      post=generate_signature(data=data), user=user)
-    print(x.text)
-    print(x)
+    print("======================================================================================")
+    # print(x.text)
+    # print(x)
     print(x.status_code)
-    print(x.json())
-    return x.json()
+    print(x.text)
+    print("======================================================================================")
+    return x.text
+
+
+def get_story_by_user_ids(user, user_ids):
+    data = json.dumps({
+        'exclude_media_ids': [],
+        "supported_capabilities_new": [
+            {
+                "name": "SUPPORTED_SDK_VERSIONS",
+                "value": "105.0,106.0,107.0,108.0,109.0,110.0,111.0,112.0,113.0,114.0,115.0,116.0,117.0,118.0,119.0,120.0,121.0,122.0,123.0,124.0,125.0,126.0,127.0,128.0,129.0,130.0,131.0,132.0,133.0,134.0,135.0,136.0,137.0,138.0,139.0,140.0,141.0,142.0,143.0,144.0,145.0,146.0,147.0,148.0,149.0,150.0,151.0,152.0,153.0,154.0,155.0,156.0,157.0,158.0,159.0,160.0,161.0,162.0,163.0,164.0,165.0,166.0,167.0,168.0,169.0,170.0,171.0,172.0,173.0,174.0,175.0,176.0,177.0,178.0,179.0,180.0,181.0,182.0,183.0,184.0,185.0,186.0,187.0,188.0,189.0,190.0,191.0,192.0,193.0,194.0,195.0,196.0,197.0,198.0,199.0,200.0,201.0,202.0,203.0,204.0,205.0,206.0,207.0,208.0,209.0,210.0,211.0,212.0,213.0,214.0,215.0,216.0,217.0,218.0,219.0,220.0,221.0,222.0,223.0,"
+            },
+            {
+                "name": "FACE_TRACKER_VERSION",
+                "value": "14"
+            },
+            {
+                "name": "segmentation",
+                "value": "segmentation_enabled"
+            },
+            {
+                "name": "COMPRESSION",
+                "value": "ETC2_COMPRESSION"
+            },
+            {
+                'name': "world_tracker",
+                'value': "world_tracker_enabled"
+            },
+            {
+                'name': "gyroscope",
+                'value': "gyroscope_enabled"
+            }
+        ],
+        "source": "reel_feed_timeline",
+        "user_ids": user_ids,
+    })
+    x = send_request(endpoint='feed/reels_media/',
+                     post=generate_signature(data=data), user=user)
+    print("======================================================================================")
+    # print(x.text)
+    # print(x)
+    # print(x.status_code)
+    # print(x.json())
+    # # write flie
+    # with open('story.json', 'w') as f:
+    #     json.dump(x.json(), f)
+    #
+    # print("======================================================================================")
+    dt = x.json()
+    dt = dt.get('reels')
+    media_id_dt = []
+    for _, value in dt.items():
+        media_ids = [i['id'] for i in value.get('items', [])[:2]]
+        for media_id in media_ids:
+            media_id_dt.append(media_id)
+
+    return media_id_dt

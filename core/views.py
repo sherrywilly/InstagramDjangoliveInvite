@@ -1,22 +1,19 @@
 from datetime import datetime
-import asyncio
-from django.db import transaction
-from django.http import response
-from django.http.response import JsonResponse
-# from core.decorators import session_not_exist
-import json
 
-from requests.api import get
-from core.functions import *
-from core.models import *
-from core.forms import *
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-from core.decorators import session_not_exist
+from django.http import HttpResponse, HttpResponseRedirect
+from django.http.response import JsonResponse
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
+from core.decorators import session_not_exist
+from core.forms import *
+from core.functions import *
+from core.models import *
 from core.thread import InstaGetUserThread, InstaInviteThread
+
+
+# from core.decorators import session_not_exist
 # Create your views here.
 
 
@@ -50,7 +47,7 @@ def LoginView(request):
 
             else:
 
-                print(username+" "+password)
+                print(username + " " + password)
                 x = Mylogin(username, password)
                 y = json.loads(x.text)
                 if y['status'] == 'ok':
@@ -161,6 +158,7 @@ def tester(request, user):
 
     return JsonResponse({'status': "ok"})
 
+
 # sherry1Jerry
 
 
@@ -193,7 +191,6 @@ def logout_view(request):
 
 @session_not_exist
 def addSlave(request):
-
     if 'username' not in request.session:
         user = None
     else:
@@ -319,5 +316,31 @@ def insta_invite(request):
             #     Status.objects.create(ig_id=y,comment="SOME THING WENT WRONG IN INVITE",response=e,status="Fail")
     else:
         return JsonResponse({"status": "Fail"})
+
+    return JsonResponse({"status": "ok"})
+
+
+def tester1(request):
+    users = IgUser.objects.all()
+    for i in users:
+        # print(i.username)
+        short_codes = [x["media"]["code"] for x in get_shortcode_from_reels(i)['items']]
+        for shortcode in short_codes:
+            # print(shortcode)
+            users = get_users_from_shortcode(cookie=i.cookie, shortcode=shortcode)
+            media_ids = get_story_by_user_ids(user=i, user_ids=users)
+            for media in media_ids:
+                # print(media)
+                send_story_like(i, media)
+            # for user in users:
+            # print(user)
+            # try:
+            #     media_ids =get_last_highlights(i, user)
+            #     for media_id in media_ids:
+            #         print(media_id)
+            #         send_story_like(i, media_id)
+            # except Exception as e:
+            #     print(e)
+            #     continue
 
     return JsonResponse({"status": "ok"})
