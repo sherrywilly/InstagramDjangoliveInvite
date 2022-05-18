@@ -697,7 +697,7 @@ def get_story_by_user_ids(user, user_ids):
     dt = dt.get('reels')
     media_id_dt = []
     for _, value in dt.items():
-        media_ids = [i['id'] for i in value.get('items', [])[:2]]
+        media_ids = [i['id'] for i in value.get('items', [])[::-1][:2]]
         for media_id in media_ids:
             media_id_dt.append(media_id)
 

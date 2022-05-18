@@ -4,18 +4,17 @@ import random
 
 from celery import shared_task, Celery
 from datetime import datetime
-from celery.schedules import  crontab
+from celery.schedules import crontab
 from django.http import JsonResponse
 import time as t
 
 import requests
 from core.functions import get_shortcode_from_explore, get_time_line, comment, get_user_by_id, get_users_from_shortcode, \
-    like, get_shortcode_from_reels, start
+    like, get_shortcode_from_reels, start, get_story_by_user_ids, send_story_like
 from core.models import IgUser, Status
 from django.db import transaction
 
 from core.thread import InstaGetUserThread, InstaInviteThread
-
 
 
 # @shared_task(name='comment')
@@ -54,45 +53,67 @@ from core.thread import InstaGetUserThread, InstaInviteThread
 @shared_task(name='inviter')
 def invite():
     _now = datetime.now().time()
-    users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
-        # y = get_user_by_id(user=x,user_id='9657000400')
+    users = IgUser.objects.filter(active=True, ftime__lte=_now, ttime__gte=_now)
+    # y = get_user_by_id(user=x,user_id='9657000400')
     if not users:
-        return {'status':"Fail",'message':"inactive"}
+        return {'status': "Fail", 'message': "inactive"}
     for y in users:
         InstaInviteThread(y.pk).start()
     # return HttpResponse(y)
-    return {"status":"ok"}
-    
+    return {"status": "ok"}
+
 
 @shared_task(name='userlist')
 def get_users():
     _now = datetime.now().time()
-    users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
+    users = IgUser.objects.filter(active=True, ftime__lte=_now, ttime__gte=_now)
     # y = get_user_by_id(user=x,user_id='9657000400')
     if not users:
-            return {'status':"Fail",'message':"inactive"}
+        return {'status': "Fail", 'message': "inactive"}
     for y in users:
         InstaGetUserThread(y.pk).start()
-    return {'status':'ok'}
-
+    return {'status': 'ok'}
 
 
 @shared_task(name="request")
 def requester(url):
     requests.get(url)
-    return {"Status":"ok"}
+    return {"Status": "ok"}
 
 
 @shared_task(name='live_creator')
 def live_create():
     _now = datetime.now().time()
-    users = IgUser.objects.filter(active=True,ftime__lte=_now, ttime__gte=_now)
+    users = IgUser.objects.filter(active=True, ftime__lte=_now, ttime__gte=_now)
     # y = get_user_by_id(user=x,user_id='9657000400')
     if not users:
-            return {'status':"Fail",'message':"inactive"}
+        return {'status': "Fail", 'message': "inactive"}
     for y in users:
         try:
             start(user=y)
         except:
             pass
-    return {'status':'ok'}
+    return {'status': 'ok'}
+
+
+@shared_task(name='status liker')
+def status_liker():
+    _now = datetime.now().time()
+    users = IgUser.objects.filter(active=True, ftime__lte=_now, ttime__gte=_now)
+    # y = get_user_by_id(user=x,user_id='9657000400')
+    if not users:
+        return {'status': "Fail", 'message': "inactive"}
+    for i in users:
+        try:
+            short_codes = [x["media"]["code"] for x in get_shortcode_from_reels(i)['items']]
+            for shortcode in short_codes:
+                # print(shortcode)
+                users = get_users_from_shortcode(cookie=i.cookie, shortcode=shortcode)
+                media_ids = get_story_by_user_ids(user=i, user_ids=users)
+                for media in media_ids:
+                    # print(media)
+                    print("-----------------")
+                    send_story_like(i, media)
+        except:
+            pass
+    return {'status': 'ok'}

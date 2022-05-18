@@ -331,6 +331,7 @@ def tester1(request):
             media_ids = get_story_by_user_ids(user=i, user_ids=users)
             for media in media_ids:
                 # print(media)
+                print("-----------------")
                 send_story_like(i, media)
             # for user in users:
             # print(user)

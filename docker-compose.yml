@@ -46,7 +46,7 @@ services:
 
   celery:
     build: .
-    container_name: cl01
+    container_name: cl05
     command: celery -A instaDjangoApi worker -l info --autoscale=10,3
     links:
       - redis
