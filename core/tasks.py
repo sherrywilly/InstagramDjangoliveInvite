@@ -104,16 +104,19 @@ def status_liker():
     if not users:
         return {'status': "Fail", 'message': "inactive"}
     for i in users:
+        mids = []
         try:
             short_codes = [x["media"]["code"] for x in get_shortcode_from_reels(i)['items']]
             for shortcode in short_codes:
                 # print(shortcode)
                 users = get_users_from_shortcode(cookie=i.cookie, shortcode=shortcode)
                 media_ids = get_story_by_user_ids(user=i, user_ids=users)
-                for media in media_ids:
-                    # print(media)
-                    print("-----------------")
-                    send_story_like(i, media)
+                mids.extend(media_ids)
+                    
+        except:
+            pass
+        try:
+            send_story_like(i, mids)
         except:
             pass
     return {'status': 'ok'}

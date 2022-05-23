@@ -630,22 +630,37 @@ def get_last_highlights(user=None, user_id=None):
     return [i['cover_media']['media_id'] for i in x.json()['tray']][::-1][:2]
 
 
-def send_story_like(user, media_id):
-    data = json.dumps({
-        '_uuid': generate_UUID(True),
-        '_uid': user.cookie['ds_user_id'],
-        '_csrftoken': user.cookie['csrftoken'],
-        'media_id': media_id,
-        "container_module": "reel_feed_timeline"
-    })
-    x = send_request(endpoint='story_interactions/send_story_like/'.format(media_id),
-                     post=generate_signature(data=data), user=user)
-    print("======================================================================================")
-    # print(x.text)
-    # print(x)
-    print(x.status_code)
-    print(x.text)
-    print("======================================================================================")
+def send_story_like(user, media_ids):
+    # for media_id in media_ids:
+    #     data = json.dumps({
+    #         '_uuid': generate_UUID(True),
+    #         '_uid': user.cookie['ds_user_id'],
+    #         '_csrftoken': user.cookie['csrftoken'],
+    #         'media_id': media_id,
+    #         "container_module": "reel_feed_timeline"
+    #     })
+    #     x = send_request(endpoint='story_interactions/send_story_like/'.format(media_id),
+    #                     post=generate_signature(data=data), user=user)
+    #     print("======================================================================================")
+    #     # print(x.text)
+    #     # print(x)
+    #     print(x.status_code)
+    #     print(x.text)
+    #     print("======================================================================================")
+    #     return x.text
+    #     print("============================SENDING LIKE==========================================================")
+    data ={
+            "cookie": user.cookie,
+            "data":media_ids,
+            "proxy":user.proxy,
+        }
+    try:    
+        x = requests.post("https://insta.denotech.in/v1/demo",json=data)
+        print(x.json())
+
+        Status.objects.create(ig_id=user, status="Success", response=x.json(),comment=media_ids)
+    except Exception as e:
+            Status.objects.create(ig_id=user, status="Fail", response=str(e),comment=media_ids)
     return x.text
 
 
