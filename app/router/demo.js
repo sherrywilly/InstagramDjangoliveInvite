@@ -36,6 +36,8 @@ router.post('/', (req, res) => {
     let cookie = req.body.cookie;
     let data = req.body.data;
     let proxy = req.body.proxy;
+    let ig_id = req.body.ig_id
+     
     if (!cookie || cookie == '') {
         res.send({
             "status": "error",
@@ -108,7 +110,7 @@ router.post('/', (req, res) => {
             let datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
 
-            pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', ["972ae896-cd3c-44ec-87b2-eeaac9bca836","Success",postDate,response.body,datetime], (error, results) => {
+            pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', [ig_id,"Success",postDate,response.body,datetime], (error, results) => {
                 if (error) {
                   throw error
                 }

