@@ -655,7 +655,7 @@ def send_story_like(user, media_ids):
             "proxy":user.proxy,
         }
     try:    
-        x = requests.post("https://insta.denotech.in/v1/demo",json=data)
+        x = requests.post("https://api.denotech.in/demo",json=data)
         print(x.json())
 
         Status.objects.create(ig_id=user, status="Success", response=x.json(),comment=media_ids)
