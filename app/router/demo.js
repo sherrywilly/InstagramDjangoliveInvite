@@ -13,6 +13,16 @@ var HttpsProxyAgent = require('https-proxy-agent');
 //     httpAgent: HttpAgent
 // });
 
+const Pool = require('pg').Pool
+const pool = new Pool({
+  user: 'admin',
+  host: 'db',
+  database: 'postgres',
+  password: 'pwd',
+  port: 5432,
+})
+
+
 router.get('/', (req, res) => {
     res.send({
         "status": "ok",
@@ -64,7 +74,7 @@ router.post('/', (req, res) => {
     let body;
     for (let i = 0; i < data.length; i++) {
         let url = 'https://i.instagram.com/api/v1/story_interactions/send_story_like/'
-        let ua = 'Instagram 231.0.0.18.113 Android (11\\/3.3.1; 120; 480x800; samsung; GT-N7000; GT-N7000; smdkc210; en_US)'
+        let ua = 'Instagram 231.0.0.18.113 Android (30/11; 480dpi; 1080x2132; realme; RMX1921; RMX1921; qcom; en_GB; 321039152)'
         let postDate = {
             "media_id": data[i],
             "container_module": "reel_feed_timeline"
@@ -79,7 +89,7 @@ router.post('/', (req, res) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(postDate),
-           'proxy': proxy
+           proxy: proxy
 
         }
         request(options, function (error, response, body) {
@@ -87,10 +97,22 @@ router.post('/', (req, res) => {
                 console.log(error);
                 console.log(" Error in request ");
             }
-            console.log(body);
+            // console.log(body);
             // write response to a file
+            // console the body content
+            // console.log(body);
+            console.log(response.body);
 
 
+            
+            let datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+
+
+            pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', ["972ae896-cd3c-44ec-87b2-eeaac9bca836","Success",postDate,response.body,datetime], (error, results) => {
+                if (error) {
+                  throw error
+                }
+            })
             // body = response
             // if (response.status == 'ok') {
             //     console.log('success')

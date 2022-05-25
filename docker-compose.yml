@@ -67,12 +67,17 @@ services:
       context: .
       dockerfile: app/Dockerfile
     container_name: nd01
+    restart: unless-stopped
     command:  bash -c "npm install && npm start"
     # command: npm start
     ports:
       - "3000:3001"
     expose:
       - 3000
+    depends_on:
+      - db
+    links:
+      - db
     networks:
       - insta_tier
     volumes:

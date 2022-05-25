@@ -321,7 +321,7 @@ def insta_invite(request):
 
 
 def tester1(request):
-    users = IgUser.objects.all()
+    users =[]
     
     for i in users:
         # print(i.username)

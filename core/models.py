@@ -94,14 +94,14 @@ class IgUser(models.Model):
 
 
 class Status(models.Model):
-    ig_id = models.ForeignKey(IgUser, on_delete=models.CASCADE)
+    ig_id = models.ForeignKey(IgUser, on_delete=models.CASCADE,blank=True, null=True)
     status = models.CharField(default="Success", max_length=20)
     comment = models.TextField(blank=True,null=True)
     datetime = models.DateTimeField(auto_now_add=True)
     response = models.JSONField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.ig_id.username)+" "+self.status+"  "+str(self.datetime)
+        return str(self.ig_id)+" "+self.status+"  "+str(self.datetime)
 
     class Meta:
         ordering = ['-datetime', ]
