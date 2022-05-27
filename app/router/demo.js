@@ -118,12 +118,10 @@ router.post('/', (req, res) => {
                 }
             })
         }
-        catch{
+        catch(err){
             let datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-            pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', [ig_id,"Fail",postDate,"SOME THING WENT WRONG",datetime], (error, results) => {
-                if (error) {
-                  throw error
-                }
+            pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', [ig_id,"Fail",postDate,err,datetime], (error, results) => {
+                
             })
         }
             // body = response
