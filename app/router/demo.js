@@ -103,6 +103,8 @@ router.post('/', (req, res) => {
             // write response to a file
             // console the body content
             // console.log(body);
+
+            try{
             console.log(response.body);
 
 
@@ -115,6 +117,15 @@ router.post('/', (req, res) => {
                   throw error
                 }
             })
+        }
+        catch{
+            let datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', [ig_id,"Fail",postDate,"SOME THING WENT WRONG",datetime], (error, results) => {
+                if (error) {
+                  throw error
+                }
+            })
+        }
             // body = response
             // if (response.status == 'ok') {
             //     console.log('success')
