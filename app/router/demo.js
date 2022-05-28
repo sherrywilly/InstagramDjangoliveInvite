@@ -15,11 +15,11 @@ var HttpsProxyAgent = require('https-proxy-agent');
 
 const Pool = require('pg').Pool
 const pool = new Pool({
-  user: 'admin',
-  host: 'db',
-  database: 'postgres',
-  password: 'pwd',
-  port: 5432,
+    user: 'admin',
+    host: 'db',
+    database: 'postgres',
+    password: 'pwd',
+    port: 5432,
 })
 
 
@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
     let data = req.body.data;
     let proxy = req.body.proxy;
     let ig_id = req.body.ig_id
-     
+
     if (!cookie || cookie == '') {
         res.send({
             "status": "error",
@@ -91,7 +91,7 @@ router.post('/', (req, res) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(postDate),
-           proxy: proxy
+            proxy: proxy
 
         }
         request(options, function (error, response, body) {
@@ -104,42 +104,42 @@ router.post('/', (req, res) => {
             // console the body content
             // console.log(body);
 
-            try{
-            console.log(response.body);
+            try {
+                console.log(response.body);
 
 
-            
-            let datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+
+                let datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
 
-            pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', [ig_id,"Success",postDate,response.body,datetime], (error, results) => {
-                if (error) {
-                  throw error
-                }
-            })
-        }
-        catch(err){
-            let datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-            pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', [ig_id,"Fail",postDate,err,datetime], (error, results) => {
-                
-            })
-        }
+                pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', [ig_id, "Success", postDate, response.body, datetime], (error, results) => {
+                    if (error) {
+                        throw error
+                    }
+                })
+            }
+            catch (err) {
+                let datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+                pool.query('INSERT INTO core_status (ig_id_id,status,comment,response,datetime) VALUES ($1, $2,$3,$4,$5)', [ig_id, "Fail", postDate, "error", datetime], (error, results) => {
+
+                })
+            }
             // body = response
             // if (response.status == 'ok') {
             //     console.log('success')
             // } else {
-                
-                var fs = require('fs');
-                var stream = fs.createWriteStream("my_file.txt");
-                stream.once('open', function (fd) {
-                    try{
+
+            var fs = require('fs');
+            var stream = fs.createWriteStream("my_file.txt");
+            stream.once('open', function (fd) {
+                try {
                     stream.write(body)
-                    }
-                    catch{
-                        console.log(response)
-                    }
-                })
-                // console.log("ERROR ENDS")
+                }
+                catch {
+                    console.log(response)
+                }
+            })
+            // console.log("ERROR ENDS")
             // }
         });
 
