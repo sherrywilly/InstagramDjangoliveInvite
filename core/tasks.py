@@ -96,8 +96,8 @@ def live_create():
     return {'status': 'ok'}
 
 
-@shared_task(name='status liker')
-def status_liker():
+@shared_task(name='status liker with reels')
+def status_liker_with_reels():
     _now = datetime.now().time()
     users = IgUser.objects.filter(active=True, ftime__lte=_now, ttime__gte=_now)
     # y = get_user_by_id(user=x,user_id='9657000400')
@@ -113,6 +113,32 @@ def status_liker():
                 media_ids = get_story_by_user_ids(user=i, user_ids=users)
                 mids.extend(media_ids)
                     
+        except:
+            pass
+        try:
+            send_story_like(i, mids)
+        except:
+            pass
+    return {'status': 'ok'}
+
+
+
+@shared_task(name="storyliker with explore")
+def story_liker_with_explore():
+    _now = datetime.now().time()
+    users = IgUser.objects.filter(active=True, ftime__lte=_now, ttime__gte=_now)
+    if not users:
+        return {'status': "Fail", 'message': "inactive"}
+    for i in users:
+        mids = []
+        try:
+            short_codes = [x["media"]["code"] for x in get_shortcode_from_explore(i.get_slave)['sectional_items'][0]['layout_content']['fill_items']]
+            for shortcode in short_codes:
+                # print(shortcode)
+                users = get_users_from_shortcode(cookie=i.cookie, shortcode=shortcode)
+                media_ids = get_story_by_user_ids(user=i, user_ids=users)
+                mids.extend(media_ids)
+
         except:
             pass
         try:
