@@ -321,7 +321,7 @@ def insta_invite(request):
 
 
 def tester1(request):
-    users =[]
+    users =IgUser.objects.all()
     
     for i in users:
         # print(i.username)
@@ -329,7 +329,7 @@ def tester1(request):
         short_codes = [x["media"]["code"] for x in get_shortcode_from_reels(i)['items']]
         for shortcode in short_codes:
             # print(shortcode)
-            users = get_users_from_shortcode(cookie=i.cookie, shortcode=shortcode)
+            users = get_users_from_shortcode(cookie=i.cookie, shortcode=shortcode,proxy=i.proxy)
             media_ids = get_story_by_user_ids(user=i, user_ids=users)
             # for media in media_ids:
                 # print(media)

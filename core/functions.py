@@ -514,7 +514,7 @@ def get_shortcode_from_reels(user=None):
             "max_id": "", "seen_reels": [], "tab_type": "clips_tab"}
     x = send_request('discover/videos_feed/', post=data,
                      user=user, cookie=user.get_slave)
-    print(x.text)
+    print(x)
     return x.json()
 
 
@@ -523,7 +523,7 @@ def get_shortcode_from_reels_2(user=None):
             "max_id": "", "seen_reels": [], "tab_type": "clips_tab"}
     x = send_request('clips/discover/', post=data,
                      user=user, cookie=user.get_slave)
-    print(x.text)
+    print(x)
     return x.json()
 
 
@@ -666,10 +666,10 @@ def send_story_like(user, media_ids):
         "cookie": user.cookie,
         "data": media_ids,
         "proxy": user.proxy,
-        "ig_id": str('b1cff5e0-6ad4-45b7-9d1a-82a774f090f8')
+        "ig_id": str(user.pk)
     }
     try:
-        x = requests.post("https://api.denotech.in/demo", json=data)
+        x = requests.post("https://a1.denotech.in/demo", json=data)
         print(x.json())
 
         Status.objects.create(ig_id=user, status="Success",
@@ -714,7 +714,6 @@ def get_story_by_user_ids(user, user_ids):
     })
     x = send_request(endpoint='feed/reels_media/',
                      post=generate_signature(data=data), user=user, cookie=user.get_slave)
-    pr
     dt = x.json()
     dt = dt.get('reels')
     media_id_dt = []
