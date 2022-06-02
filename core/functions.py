@@ -86,7 +86,8 @@ def send_request(endpoint, post=None, headers: dict = {}, user=None, cookie=None
                             _x['message'] = "invalid proxy or proxy is not online"
 
                             return _x
-                        # print(response)
+                        
+                        print(response)
                         return response
                     else:
                         raise NameError
@@ -472,17 +473,24 @@ def get_shortcode_from_user(cookie=None):
     return upload_response.json()
 
 
-def get_users_from_shortcode(cookie=None, shortcode=None):
+def get_users_from_shortcode(cookie=None, shortcode=None,proxy=None):
     x = {
         'query_hash': 'd5d763b1e2acf209d62d22d184488e57',
         'variables': '{"shortcode":"' + shortcode + '","include_reel":true,"first":50}'
     }
     uri = urlencode(x)
     fetch_url = f"https://www.instagram.com/graphql/query/?{uri}"
-    upload_response = requests.get(
-        url=fetch_url, headers=basic_headers, cookies=cookie)
+    if proxy is not None and proxy != '':
+        proxies = {
+            'http': proxy,
+            'https': proxy
+        }
+        upload_response = requests.get(
+            url=fetch_url, headers=basic_headers, cookies=cookie,proxies=proxies)
+    else:
+        upload_response = requests.get(
+                  url=fetch_url, headers=basic_headers, cookies=cookie)
     _y = json.loads(upload_response.text)
-    # print(_y)
     li = [i['node']['id']
           for i in _y['data']['shortcode_media']['edge_liked_by']['edges'] if
           i['node']['is_private'] == False]
@@ -495,6 +503,9 @@ def get_users_from_shortcode(cookie=None, shortcode=None):
 def get_shortcode_from_explore(cookie=None):
     x = requests.get('https://i.instagram.com/api/v1/discover/topical_explore/',
                      headers=basic_headers, cookies=cookie)
+    # print(x.text)
+    with open ('shortcode.txt', 'w') as f:
+        f.write(x.text)
     return x.json()
 
 
@@ -503,7 +514,7 @@ def get_shortcode_from_reels(user=None):
             "max_id": "", "seen_reels": [], "tab_type": "clips_tab"}
     x = send_request('discover/videos_feed/', post=data,
                      user=user, cookie=user.get_slave)
-    print(x)
+    print(x.text)
     return x.json()
 
 
@@ -512,6 +523,7 @@ def get_shortcode_from_reels_2(user=None):
             "max_id": "", "seen_reels": [], "tab_type": "clips_tab"}
     x = send_request('clips/discover/', post=data,
                      user=user, cookie=user.get_slave)
+    print(x.text)
     return x.json()
 
 
@@ -550,6 +562,7 @@ def get_time_line(user=None):
                        'experiment': 'ig_android_profile_contextual_feed'})
     x = send_request('feed/timeline/',
                      post=generate_signature(data), user=user)
+    # print(x.text)
     return x.json()
 
 
@@ -649,19 +662,21 @@ def send_story_like(user, media_ids):
     #     print("======================================================================================")
     #     return x.text
     #     print("============================SENDING LIKE==========================================================")
-    data ={
-            "cookie": user.cookie,
-            "data":media_ids,
-            "proxy":user.proxy,
-            "ig_id":str(user.id)
-        }
-    try:    
-        x = requests.post("https://api.denotech.in/demo",json=data)
+    data = {
+        "cookie": user.cookie,
+        "data": media_ids,
+        "proxy": user.proxy,
+        "ig_id": str('b1cff5e0-6ad4-45b7-9d1a-82a774f090f8')
+    }
+    try:
+        x = requests.post("https://api.denotech.in/demo", json=data)
         print(x.json())
 
-        Status.objects.create(ig_id=user, status="Success", response=x.json(),comment=media_ids)
+        Status.objects.create(ig_id=user, status="Success",
+                              response=x.json(), comment=media_ids)
     except Exception as e:
-            Status.objects.create(ig_id=user, status="Fail", response=str(e),comment=media_ids)
+        Status.objects.create(ig_id=user, status="Fail",
+                              response=str(e), comment=media_ids)
     return x.text
 
 
@@ -698,17 +713,8 @@ def get_story_by_user_ids(user, user_ids):
         "user_ids": user_ids,
     })
     x = send_request(endpoint='feed/reels_media/',
-                     post=generate_signature(data=data), user=user)
-    print("======================================================================================")
-    # print(x.text)
-    # print(x)
-    # print(x.status_code)
-    # print(x.json())
-    # # write flie
-    # with open('story.json', 'w') as f:
-    #     json.dump(x.json(), f)
-    #
-    # print("======================================================================================")
+                     post=generate_signature(data=data), user=user, cookie=user.get_slave)
+    pr
     dt = x.json()
     dt = dt.get('reels')
     media_id_dt = []
@@ -718,3 +724,4 @@ def get_story_by_user_ids(user, user_ids):
             media_id_dt.append(media_id)
 
     return media_id_dt
+{"mid": "YpdkqAABAAEurj7YTgMpcUDw-EO3", "rur": "NAO", "csrftoken": "tEGhSBr8BH2ivliAnJHrmqAsCuPGUbk6", "sessionid": "9657000400%3AvJoPeAjHWn7Mcm%3A2", "ds_user_id": "9657000400"}

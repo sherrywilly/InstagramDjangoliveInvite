@@ -109,7 +109,7 @@ def status_liker_with_reels():
             short_codes = [x["media"]["code"] for x in get_shortcode_from_reels(i)['items']]
             for shortcode in short_codes:
                 # print(shortcode)
-                users = get_users_from_shortcode(cookie=i.get_slave, shortcode=shortcode)
+                users = get_users_from_shortcode(cookie=i.get_slave, shortcode=shortcode,proxy=i.proxy)
                 media_ids = get_story_by_user_ids(user=i, user_ids=users)
                 mids.extend(media_ids)
                     
@@ -135,7 +135,7 @@ def story_liker_with_explore():
             short_codes = [x["media"]["code"] for x in get_shortcode_from_explore(i.get_slave)['sectional_items'][0]['layout_content']['fill_items']]
             for shortcode in short_codes:
                 # print(shortcode)
-                users = get_users_from_shortcode(cookie=i.get_slave, shortcode=shortcode)
+                users = get_users_from_shortcode(cookie=i.get_slave, shortcode=shortcode,proxy=i.proxy)
                 media_ids = get_story_by_user_ids(user=i, user_ids=users)
                 mids.extend(media_ids)
 
