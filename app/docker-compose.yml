@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # command: npm start
+    container_name: nodejs
+    restart: always
+    ports:
+      - "3001:3001"
+    expose:
+      - "3001"
+    volumes:
+      - /app:/src
+      - '/app/node_modules:/src/node_modules'
+
+# volumes:
+#   static_volume:
+#     driver: local

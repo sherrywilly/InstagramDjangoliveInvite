@@ -46,7 +46,7 @@ services:
 
   celery:
     build: .
-    container_name: cl01
+    container_name: cl05
     command: celery -A instaDjangoApi worker -l info --autoscale=10,3
     links:
       - redis
@@ -61,6 +61,30 @@ services:
     restart: unless-stopped
     networks:
       - insta_tier
+
+  nodejs:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    container_name: nd01
+    restart: unless-stopped
+    command:  bash -c "npm install && npm start"
+    # command: npm start
+    ports:
+      - "3000:3001"
+    expose:
+      - 3000
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - insta_tier
+    volumes:
+      - './app:/src'
+      # - '/app/node_modules'
+      # - '/app/node_modules/.bin'
+  
 volumes:
   insta_db:
     driver: local
@@ -69,12 +93,3 @@ volumes:
 networks:
   insta_tier:
     driver: bridge
-  # flower:
-  #   build: .
-  #   command: celery flower -app instaDjangoApi --broker=redis://redis
-  #   restart: unless-stopped
-  #   ports:
-  #     - "5555:5555"
-  #   expose:
-  #     - "5555"
-
