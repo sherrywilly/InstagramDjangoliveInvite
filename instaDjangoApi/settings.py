@@ -129,7 +129,9 @@ else:
 STATIC_ROOT = '/static/'
 STATIC_URL = '/static/'
 
-
+STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static')
+    ]
 CELERY_BROKER_URL = 'redis://redis:6379/'
 CELERY_RESULT_BACKEND = 'redis://redis:6379/'
 CELERY_ACCEPT_CONTENT = ['application/json']

@@ -21,13 +21,10 @@ COPY ./requirements.txt /app/requirements.txt
 RUN pip3 install -r requirements.txt
 EXPOSE 8000
 COPY . /
-# COPY . /entrypoint.sh /
-# COPY connect.sh /connect.sh
-# # Making sure the script is in unix format
-# RUN dos2unix /entry.sh /connect.sh
-
-# # Fix script Permissions
-# RUN chmod +x /entry.sh /connect.sh
+COPY entrypoint.sh /entrypoint.sh
+COPY connect.sh /connect.sh
+RUN dos2unix /entrypoint.sh /connect.sh
+RUN chmod +x /entrypoint.sh /connect.sh
 
 # Entrypoint
 ENTRYPOINT ["sh", "/entrypoint.sh"]
