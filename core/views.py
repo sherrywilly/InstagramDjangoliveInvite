@@ -57,7 +57,7 @@ def LoginView(request):
                     return redirect('dash/')
                 else:
                     msg = y['message']
-                    JsonResponse({
+                    return JsonResponse({
                         'message': msg,
                         "status": "Fail"
                     })
@@ -91,38 +91,6 @@ def dashboard(request):
         'btn': "update"
     }
     return render(request, "form.html", context)
-
-
-def tester1(request):
-    x = IgUser.objects.all().first()
-    # print(x)
-    y = get_time_line(user=x)
-    count = 0
-    for m in y['items']:
-        try:
-            print("=============================================")
-            taken = m['taken_at']
-            now_timestamp = t.time()
-            difference = float(now_timestamp) - float(taken)
-            print(difference)
-            if difference < 30000:
-                print("3 min")
-                if count < 1:
-                    media_id = m['id']
-                    l = comment(user=x, mediaId=media_id, commentText="❤")
-                    lil = like(user=x, mediaId=media_id)
-
-                    print(l)
-                    print(lil)
-                    count += 1
-                    break
-
-        except Exception as e:
-            print(e)
-            pass
-
-    #
-    return JsonResponse(y)
 
 
 def tester(request, user):
@@ -248,7 +216,7 @@ def deleteSlave(request, pk):
         SlaveUser.objects.get(id=pk).delete()
         return redirect(reverse('addslave'))
     else:
-        HttpResponse("You are not authorized to make this request")
+        return HttpResponse("You are not authorized to make this request")
 
 
 def UserManage(request, pk):

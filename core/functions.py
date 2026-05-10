@@ -45,9 +45,11 @@ basic_headers = {
 }
 
 
-def send_request(endpoint, post=None, headers: dict = {}, user=None, cookie=None, u=None):
+def send_request(endpoint, post=None, headers=None, user=None, cookie=None, u=None):
     verify = False
-    h = basic_headers
+    h = basic_headers.copy()
+    if headers is None:
+        headers = {}
     h.update(headers)
 
     if u:
@@ -503,9 +505,6 @@ def get_users_from_shortcode(cookie=None, shortcode=None,proxy=None):
 def get_shortcode_from_explore(cookie=None):
     x = requests.get('https://i.instagram.com/api/v1/discover/topical_explore/',
                      headers=basic_headers, cookies=cookie)
-    # print(x.text)
-    with open ('shortcode.txt', 'w') as f:
-        f.write(x.text)
     return x.json()
 
 
@@ -668,6 +667,7 @@ def send_story_like(user, media_ids):
         "proxy": user.proxy,
         "ig_id": str(user.pk)
     }
+    x = None
     try:
         x = requests.post("https://a1.denotech.in/demo", json=data)
         print(x.json())
@@ -677,6 +677,7 @@ def send_story_like(user, media_ids):
     except Exception as e:
         Status.objects.create(ig_id=user, status="Fail",
                               response=str(e), comment=media_ids)
+        return str(e)
     return x.text
 
 
@@ -723,4 +724,3 @@ def get_story_by_user_ids(user, user_ids):
             media_id_dt.append(media_id)
 
     return media_id_dt
-{"mid": "YpdkqAABAAEurj7YTgMpcUDw-EO3", "rur": "NAO", "csrftoken": "tEGhSBr8BH2ivliAnJHrmqAsCuPGUbk6", "sessionid": "9657000400%3AvJoPeAjHWn7Mcm%3A2", "ds_user_id": "9657000400"}
